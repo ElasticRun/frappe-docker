@@ -10,8 +10,8 @@ spec:
   storageClassName: trun-aks-beta-sites-sc
   hostPath:
     path: /data/frappe/Software/k8s-volumes/frappe-vol
-  mountOptions:
-    - dir_mode=0777
-    - file_mode=0777
-    - uid=frappe
-    - gid=frappe
+  # mountOptions:
+  #   - dir_mode=0777
+  #   - file_mode=0777
+  #   - uid=frappe
+  #   - gid=frappe
