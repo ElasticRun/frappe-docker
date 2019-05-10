@@ -1,0 +1,13 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: trun-aks-beta-sites-sc
+# labels:
+#     addonmanager.kubernetes.io/mode: EnsureExists
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+# Values below are specific to provider
+provisioner: microk8s.io/hostpath

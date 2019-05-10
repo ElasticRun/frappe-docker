@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trun-frappe-redis-config
+data:
+  redis_cache.conf: |
+    dbfilename redis_cache.rdb
+    bind 0.0.0.0
+    port 13000
+    maxmemory 292mb
+    maxmemory-policy allkeys-lru
+    appendonly no
+
+    save ""
+  redis_queue.conf: |
+    dbfilename redis_queue.rdb
+    bind 0.0.0.0
+    port 11000
+  redis_socketio.conf: |
+    dbfilename redis_socketio.rdb
+    bind 0.0.0.0
+    port 12000

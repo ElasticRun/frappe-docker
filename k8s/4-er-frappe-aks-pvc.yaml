@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: trun-aks-beta-sites-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: trun-aks-beta-sites-sc
+  resources:
+    requests:
+      storage: 5Gi

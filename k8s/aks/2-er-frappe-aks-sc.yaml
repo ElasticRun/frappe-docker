@@ -1,0 +1,14 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: trun-aks-beta-sites-sc
+# Values below are specific to azure - will need to be updated for migrating to any other cloud platform.
+provisioner: kubernetes.io/azure-file
+parameters:
+  skuName: Standard_LRS
+  location: sea
+  storageAccount: trunfrappeaksbeta
+reclaimPolicy: Retain
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777

@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tredrun
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tredrun
+  template:
+    metadata:
+      labels:
+        app: tredrun
+    spec:
+      containers:
+      # Frappe Container
+      - name: er-frappe
+        image: dock.elasticrun.in/er-frappe:0.1-dev
+        resources: {}
+          # limits:
+          #   memory: "256Mi"
+          #   cpu: "100m"
+        ports:
+          - containerPort: 8000
+          - containerPort: 9000
+          - containerPort: 6787
+        env:
+          - name: DB_HOST
+            valueFrom:
+              secretKeyRef:
+                key: db.host
+                name: trun-frappe-mariadb-secrets
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                key: db.name
+                name: trun-frappe-mariadb-secrets
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: db.password
+                name: trun-frappe-mariadb-secrets
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: admin.password
+                name: trun-frappe-mariadb-secrets
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /home/frappe/${BENCH_NAME}/sites/frappesite.docker
+          name: er-frappe-sites-vol
+        - mountPath: /home/frappe/frappe-bench/config/
+          name: er-frappe-redis-config
+      # Local redis cache in the pod
+      - name: redis-cache
+        image: redis:alpine
+        command: ["redis-server","/etc/conf.d/redis_cache.conf"]
+        resources: {}
+          # limits:
+          #   memory: "256Mi"
+          #   cpu: "100m"
+        ports:
+          - containerPort: 13000
+        volumeMounts:
+        - mountPath: /etc/conf.d
+          name: er-frappe-redis-cache-config
+      # Local redis queue in the pod.
+      - name: redis-queue
+        image: redis:alpine
+        command: ["redis-server","/etc/conf.d/redis_queue.conf"]
+        resources: {}
+          # limits:
+          #   memory: "256Mi"
+          #   cpu: "100m"
+        ports:
+          - containerPort: 11000
+        volumeMounts:
+        - mountPath: /etc/conf.d
+          name: er-frappe-redis-queue-config
+      # Local redis socket-io in the pod.
+      - name: redis-socketio
+        image: redis:alpine
+        command: ["redis-server","/etc/conf.d/redis_socketio.conf"]
+        resources: {}
+          # limits:
+          #   memory: "256Mi"
+          #   cpu: "100m"
+        ports:
+          - containerPort: 12000
+        volumeMounts:
+        - mountPath: /etc/conf.d
+          name: er-frappe-redis-socketio-config
+      restartPolicy: Always
+      volumes:
+      - name: er-frappe-sites-vol
+        persistentVolumeClaim:
+          claimName: trun-aks-beta-sites-pvc
+      - name: er-frappe-redis-config
+        configMap:
+            name: trun-frappe-redis-config
+      - name : er-frappe-redis-cache-config
+        configMap:
+          name: trun-frappe-redis-config
+          items:
+          - key: redis_cache.conf
+            path: redis_cache.conf
+      - name : er-frappe-redis-queue-config
+        configMap:
+          name: trun-frappe-redis-config
+          items:
+          - key: redis_queue.conf
+            path: redis_queue.conf
+      - name : er-frappe-redis-socketio-config
+        configMap:
+          name: trun-frappe-redis-config
+          items:
+          - key: redis_socketio.conf
+            path: redis_socketio.conf
