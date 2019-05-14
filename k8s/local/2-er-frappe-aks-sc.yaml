@@ -6,8 +6,10 @@ metadata:
 #     addonmanager.kubernetes.io/mode: EnsureExists
 reclaimPolicy: Retain
 allowVolumeExpansion: true
-# mountOptions:
-#   - dir_mode=0777
-#   - file_mode=0777
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=frappe
+  - gid=frappe
 # Values below are specific to provider
-provisioner: microk8s.io/hostpath
+provisioner: k8s.io/minikube-hostpath

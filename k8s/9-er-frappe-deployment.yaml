@@ -15,7 +15,8 @@ spec:
       containers:
       # Frappe Container
       - name: er-frappe
-        image: dock.elasticrun.in/er-frappe:0.1-dev
+        image: dock.elasticrun.in/er-frappe-base:0.14-dev
+        imagePullPolicy: IfNotPresent
         resources: {}
           # limits:
           #   memory: "256Mi"
@@ -48,10 +49,24 @@ spec:
         stdin: true
         tty: true
         volumeMounts:
-        - mountPath: /home/frappe/${BENCH_NAME}/sites/frappesite.docker
+        - mountPath: /home/frappe/${BENCH_NAME}/sites
           name: er-frappe-sites-vol
-        - mountPath: /home/frappe/frappe-bench/config/
+        - mountPath: /home/frappe/${BENCH_NAME}/config/
           name: er-frappe-redis-config
+        - mountPath: /home/frappe/${BENCH_NAME}/logs
+          name: trun-frappe-logs-dir
+      #Fluentd sidecar to publish logs from frappe onto ELK stack
+      - name: fluentd
+        image: dock.elasticrun.in/er-fluentd-elasticsearch:0.2-dev
+        imagePullPolicy: IfNotPresent
+        resources: {}
+        ports:
+          - containerPort: 24224
+        volumeMounts:
+        - mountPath: /fluentd/etc
+          name: er-frappe-fluentd-config
+        - mountPath: /fluentd/log
+          name: trun-frappe-logs-dir
       # Local redis cache in the pod
       - name: redis-cache
         image: redis:alpine
@@ -65,19 +80,6 @@ spec:
         volumeMounts:
         - mountPath: /etc/conf.d
           name: er-frappe-redis-cache-config
-      # Local redis queue in the pod.
-      - name: redis-queue
-        image: redis:alpine
-        command: ["redis-server","/etc/conf.d/redis_queue.conf"]
-        resources: {}
-          # limits:
-          #   memory: "256Mi"
-          #   cpu: "100m"
-        ports:
-          - containerPort: 11000
-        volumeMounts:
-        - mountPath: /etc/conf.d
-          name: er-frappe-redis-queue-config
       # Local redis socket-io in the pod.
       - name: redis-socketio
         image: redis:alpine
@@ -105,15 +107,17 @@ spec:
           items:
           - key: redis_cache.conf
             path: redis_cache.conf
-      - name : er-frappe-redis-queue-config
-        configMap:
-          name: trun-frappe-redis-config
-          items:
-          - key: redis_queue.conf
-            path: redis_queue.conf
       - name : er-frappe-redis-socketio-config
         configMap:
           name: trun-frappe-redis-config
           items:
           - key: redis_socketio.conf
             path: redis_socketio.conf
+      - name : er-frappe-fluentd-config
+        configMap:
+          name : trun-frappe-fluent-config
+          items:
+          - key : fluent.conf
+            path: fluent.conf
+      - name : trun-frappe-logs-dir
+        emptyDir: {}

@@ -4,7 +4,7 @@ metadata:
   name: redis-queue
 spec:
   selector:
-    app: tredrun
+    app: tredrun-redisq
   ports:
   - protocol: TCP
     port: 11000

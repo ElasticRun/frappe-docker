@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tredrun-redisq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tredrun-redisq
+  template:
+    metadata:
+      labels:
+        app: tredrun-redisq
+    spec:
+      containers:
+      # Local redis queue in the pod.
+      - name: redis-queue
+        image: redis:alpine
+        command: ["redis-server","/etc/conf.d/redis_queue.conf"]
+        resources: {}
+          # limits:
+          #   memory: "256Mi"
+          #   cpu: "100m"
+        ports:
+          - containerPort: 11000
+        volumeMounts:
+        - mountPath: /etc/conf.d
+          name: er-frappe-redis-queue-config
+      restartPolicy: Always
+      volumes:
+      - name : er-frappe-redis-queue-config
+        configMap:
+          name: trun-frappe-redis-config
+          items:
+          - key: redis_queue.conf
+            path: redis_queue.conf
