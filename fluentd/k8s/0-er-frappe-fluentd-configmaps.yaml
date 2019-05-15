@@ -15,7 +15,7 @@ data:
     </source>
     <match frappe>
       @type elasticsearch
-      host 172.17.0.1
+      host elasticsearch-host
       port 9200
       logstash_format true
     </match>
