@@ -1,32 +1,60 @@
-#!/bin/sh
-# setup bench and yarn required for frappe
-BASE_BENCH_DIR=/home/frappe/frappe-bench
-TARGET_BENCH_DIR=/home/frappe/docker-bench
-# echo "Installing Bench..."
-# cd /home/frappe
-# sudo pip install -e bench-repo
-# echo "Bench Installed."
-# sudo rm -rf ~/.cache/pip
-if [[ -d ${TARGET_BENCH_DIR} ]]; then
-    cd ${TARGET_BENCH_DIR}
-    bench console << EOF
-frappe.get_all("User", limit_page_length=1)
-EOF
-    STATUS=$?
-    if [[ $STATUS -ne 0 ]] ; then
-        echo "Bench is not initialized. Setting up new bench instance..."
-        cd /home/frappe
-        bench init docker-bench --ignore-exist --skip-redis-config-generation --no-procfile --verbose
-        echo "Setting up default configurations..."
-        cp -f ${BASE_BENCH_DIR}/start-bench.sh ${TARGET_BENCH_DIR}/start-bench.sh
-        cp -f ${BASE_BENCH_DIR}/Procfile_docker ${TARGET_BENCH_DIR}/Procfile
-        cp -f ${BASE_BENCH_DIR}/common_site_config_docker.json ${TARGET_BENCH_DIR}/sites/common_site_config.json
-        cd ${TARGET_BENCH_DIR} && bench set-mariadb-host $DB_HOST && bench set-config -g root_password $DB_PASSWORD
-        echo "Default configurations completed. Setting up site..."
-        bench new-site --db-name dockerdb --mariadb-root-username root --mariadb-root-password $DB_PASSWORD --admin-password $ADMIN_PASSWORD --verbose frappesite.docker
-        echo "Site setup successfully"
+#! /bin/bash
+CONFIG_DIRS="fluentd ."
+
+function setup_k8s(){
+    type=$1
+    declare -A FILES_TO_PROCESS
+    for directory in $CONFIG_DIRS
+    do
+        if [ -d ./$directory/k8s ]
+        then
+            for file in `ls ./$directory/k8s/*.yaml`
+            do
+                key=`basename $file`
+                FILES_TO_PROCESS[$key]=$file
+            done
+        fi
+        if [ -d ./$directory/k8s/$type ]
+        then
+            for file in `ls ./$directory/k8s/$type/*.yaml`
+            do
+                key=`basename $file`
+                FILES_TO_PROCESS[$key]=$file
+            done
+        fi
+    done
+    #echo "Files to process - ${!FILES_TO_PROCESS[@]}"
+    SORTED_FILES_TO_PROCESS=($(echo ${!FILES_TO_PROCESS[@]} | tr ' ' '\n' | sort | tr '\n' ' '))
+    #IFS=$'\n' SORTED_FILES_TO_PROCESS=($(sort <<<"${!FILES_TO_PROCESS[@]}"))
+    #IFS=' '; SORTED_FILES_TO_PROCESS=($(echo "${!FILES_TO_PROCESS[@]}" | sort -h))
+    unset IFS
+    #echo "Sorted Files - ${SORTED_FILES_TO_PROCESS[@]}"
+    for key in ${SORTED_FILES_TO_PROCESS[@]}
+    do
+        filename=${FILES_TO_PROCESS[$key]}
+        if [ $filename == *"-sc-"* -o $filename == *"-pv"* ]
+        then
+            echo "Deleting existing resource using file $filename"
+            kubectl delete -f $filename
+        fi
+        echo "Processing file $filename..."
+        kubectl apply -f $filename
+    done
+}
+function usage(){
+    echo "USAGE: $1 -t aks|local"
+}
+
+if [ $# -ne 2 ]
+then
+    usage $0
+else
+    if [ $1 == "-t" ]
+    then
+        type=$2
+        echo "Running setup of type $type"
+        setup_k8s $type
+    else
+        usage $0
     fi
 fi
-echo "Trying to start docker-bench..."
-${TARGET_BENCH_DIR}/start-bench.sh
-read
