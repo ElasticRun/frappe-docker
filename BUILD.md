@@ -19,6 +19,8 @@ Base image of frappe as created by the `Dockerfile` in this folder, implements f
 * Copy `common_site_config_docker.json`, `entrypoint.sh`, `Procfile` and all `.sh` files from `entrypoints` directory into the new bench instance created.
 * Default entry point for the image is `entrypoint.sh` file with working directory as the bench directory (created above). By default, `entrypoint.sh` script loops through all `.sh` files in `entrypoints` directories and executes them one after the other, in same order as returned by the `ls` command.
 
+File `common_site_config_docker.json` can be updated to match your application's deployment design, to ensure that application points to correct instances of the redis-queue and mariadb. Note that root password value will be updated at the time of container startup.
+
 The file build.sh provides a sample build command that can be used to create a tagged image of the application.
 
 To add more applications (e.g. erpnext) into the image, either update the Dockerfile and build a fresh image, or use image created by this Dockerfile as base image and install more applications as part of the application-specific `Dockerfile`. 
