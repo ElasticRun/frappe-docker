@@ -10,6 +10,11 @@ Kubernetes provides logical wrappers over underlying implementations of majority
 * Persistent Volume Claim
 * Pod
 * Replicas
+* ConfigMap
+* Service
+* Endpoint
+
+[Kubernetes Documentation](https://kubernetes.io/docs/concepts/) is a good place to start, for an overview of the above concepts.
 
 Fluentd is used as a sidecar container in every pod and is used to stream all log files from the application to ELK setup. This allows centralized monitoring of the application after deploying the same in a Kubernetes Cluster. 
 
@@ -83,7 +88,7 @@ Configuration files for the cluster based deployment are created in a specific d
         Example - `ssh -i $(minikube ssh-key) docker@$(minikube ip) -R 3406:localhost:3306` - this command exposes mariadb service listening on 3306 TCP port on host machine, as port 3406 on VM running Kubernetes Cluster.
     
     * `aks/02-er-frappe-aks-share-secret.yaml` - This is AKS-only configuration and defines the access keys required to access the file share created on Azure.
-    * `aks/03-er-frappe-aks-sc.yaml` - Defines the storage class to be created on AKS. This connects the storage account on Azure to with the correspnding storage class. Any PVCs that request this storage class, will then be mapped to corresponding storage account.
+    * `aks/03-er-frappe-aks-sc.yaml` - Defines the storage class to be created on AKS. This connects the storage account on Azure to the correspnding storage class. Any PVCs that request this storage class, will then be mapped to corresponding storage account.
     * `local/03-er-frappe-aks-sc.yaml` - Defines the storage class to be created on local cluster. This creates a standard storage class with hostPath provisioner from Minikube. Any PVCs that request this storage class, will then be mapped to the corresponding host path directory configured in the PersistentVolume created for this storage class. Note that if the directory is created on the host machine, it needs to be mounted on the Minikube VM for it to be accessible to local Kubernetes Cluster. For more details on how to achieve this, please refer to [Minikube documentation](https://github.com/kubernetes/minikube/blob/master/docs/host_folder_mount.md). Alternatively, folders can be mounted while starting minikube. For more details, check outout of `minikube start --help`.
     * `aks/04-er-frappe-aks-pv-sites.yaml` - Defines the persistent volume that connects a storage class (created above) with an existing file share. This is then used to fulfill all persistent volume claims by the application.
     * `local/04-er-frappe-aks-pv-sites.yaml` - Defines the exact location of the host path (absolute path to the directory on VM) and maps the same to the corresponding storage class (created above). Any persistent volume claims from the application are then provisioned using this folder.

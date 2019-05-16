@@ -23,12 +23,9 @@ function setup_k8s(){
             done
         fi
     done
-    #echo "Files to process - ${!FILES_TO_PROCESS[@]}"
+
     SORTED_FILES_TO_PROCESS=($(echo ${!FILES_TO_PROCESS[@]} | tr ' ' '\n' | sort | tr '\n' ' '))
-    #IFS=$'\n' SORTED_FILES_TO_PROCESS=($(sort <<<"${!FILES_TO_PROCESS[@]}"))
-    #IFS=' '; SORTED_FILES_TO_PROCESS=($(echo "${!FILES_TO_PROCESS[@]}" | sort -h))
-    unset IFS
-    #echo "Sorted Files - ${SORTED_FILES_TO_PROCESS[@]}"
+
     for key in ${SORTED_FILES_TO_PROCESS[@]}
     do
         filename=${FILES_TO_PROCESS[$key]}
