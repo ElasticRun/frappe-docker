@@ -1,0 +1,9 @@
+kind: Endpoints
+apiVersion: v1
+metadata:
+ name: mariadb
+subsets:
+ - addresses:
+     - ip: 192.168.122.1
+   ports:
+     - port: 3306
