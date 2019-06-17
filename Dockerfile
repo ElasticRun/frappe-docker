@@ -58,18 +58,16 @@ RUN mv /home/frappe/${BENCH_NAME}/sites /home/frappe/sites-backup && mkdir -p /h
 
 USER root
 # Volume for externalizing the site assets
-VOLUME [ "/home/frappe/${BENCH_NAME}/sites" ]
-COPY ./common_site_config_docker.json /home/frappe/sites-backup/common_site_config.json
-COPY ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
+COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/sites-backup/common_site_config.json
+COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
+COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
 
-COPY ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
-RUN chown frappe:frappe /home/frappe/sites-backup/common_site_config.json \
-  && chown frappe:frappe /home/frappe/${BENCH_NAME}/Procfile \
-  && chown frappe:frappe /home/frappe/${BENCH_NAME}/entrypoint.sh
+COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
+RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
 
-ONBUILD COPY ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
-ONBUILD RUN sudo chown -R frappe:frappe /home/frappe/${BENCH_NAME}/entrypoints
-ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
+ONBUILD COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
+ONBUILD COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
+ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoint.sh && sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
 
 # Cleanup
 RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
