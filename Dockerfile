@@ -6,6 +6,9 @@ USER root
 # Generate locale C.UTF-8 for mariadb and general locale dataopenjpeg
 ENV LANG C.UTF-8
 
+# RUN echo 'http://151.101.152.249/alpine/v3.9/main' > /etc/apk/repositories \
+#   && echo 'http://151.101.152.249/alpine/v3.9/community' >> /etc/apk/repositories
+
 # && pip install --upgrade pip setuptools Click mysqlclient jinja2 virtualenv requests honcho python-crontab \
 #   semantic_version GitPython==2.1.11 jmespath docutils "urllib3<1.25,>=1.21.1" python-dateutil botocore s3transfer boto3 chardet \
 #   certifi idna requests dropbox gunicorn MarkupSafe jinja2 markdown2 PyMySQL maxminddb maxminddb-geolite2 pytz werkzeug \
@@ -20,9 +23,11 @@ ENV LANG C.UTF-8
 
 
 # Install all pre-requisites
-RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
+RUN echo '151.101.152.249 dl-cdn.alpinelinux.org' >> /etc/hosts \
+  && apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
   lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
-  mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid \
+  mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
+  python-dev openblas lapack-dev cython coreutils \
   && npm install -g yarn
 
 ARG BENCH_NAME=docker-bench
@@ -56,17 +61,20 @@ USER root
 VOLUME [ "/home/frappe/${BENCH_NAME}/sites" ]
 COPY ./common_site_config_docker.json /home/frappe/sites-backup/common_site_config.json
 COPY ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
-COPY ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
+
 COPY ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
 RUN chown frappe:frappe /home/frappe/sites-backup/common_site_config.json \
-  && chown -R frappe:frappe /home/frappe/${BENCH_NAME}/entrypoints \
   && chown frappe:frappe /home/frappe/${BENCH_NAME}/Procfile \
   && chown frappe:frappe /home/frappe/${BENCH_NAME}/entrypoint.sh
+
+ONBUILD COPY ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
+ONBUILD RUN sudo chown -R frappe:frappe /home/frappe/${BENCH_NAME}/entrypoints
+ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
 
 # Cleanup
 RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
   && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git \
-  && chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/entrypoint.sh
+  && chmod u+x /home/frappe/${BENCH_NAME}/entrypoint.sh
 
 #Execute
 USER frappe
