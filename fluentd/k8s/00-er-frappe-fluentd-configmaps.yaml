@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: trun-frappe-fluent-config
+  name: er-frappe-fluentd-config
 data:
   fluent.conf: |
     <source>
@@ -15,7 +15,7 @@ data:
     </source>
     <match frappe>
       @type elasticsearch
-      host elasticsearch-host
+      host frappe.elk.ntex.com
       port 9200
       logstash_format true
     </match>

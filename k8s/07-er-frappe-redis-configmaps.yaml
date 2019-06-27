@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: trun-frappe-redis-config
+  name: er-frappe-redis-config
 data:
   redis_cache.conf: |
     dbfilename redis_cache.rdb

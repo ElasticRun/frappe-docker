@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tredrun-redisq
+  name: er-redisq
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tredrun-redisq
+      app: er-redisq
   template:
     metadata:
       labels:
-        app: tredrun-redisq
+        app: er-redisq
     spec:
       containers:
       # Local redis queue in the pod.
@@ -30,7 +30,7 @@ spec:
       volumes:
       - name : er-frappe-redis-queue-config
         configMap:
-          name: trun-frappe-redis-config
+          name: er-frappe-redis-config
           items:
           - key: redis_queue.conf
             path: redis_queue.conf

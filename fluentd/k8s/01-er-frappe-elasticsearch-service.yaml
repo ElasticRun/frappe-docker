@@ -1,9 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
- name: elasticsearch-host
+ name: frappe-elk-ntex-com
 spec:
- type: ClusterIP
+ type: ExternalName
+ externalName: frappe.elk.ntex.com
  ports:
  - port: 9200
-   targetPort: 9200
+

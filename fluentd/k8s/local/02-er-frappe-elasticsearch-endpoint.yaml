@@ -1,9 +1,9 @@
 kind: Endpoints
 apiVersion: v1
 metadata:
- name: elasticsearch-host
+ name: frappe.elk.ntex.com
 subsets:
  - addresses:
-     - ip: 192.168.122.1
+     - ip: frappe.elk.ntex.com
    ports:
      - port: 9200
