@@ -54,20 +54,19 @@ RUN pip install ${BENCH_URL}
 USER frappe
 RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} --ignore-exist --skip-redis-config-generation \
   --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH:-master} --verbose --frappe-path ${FRAPPE_URL}
-RUN mv /home/frappe/${BENCH_NAME}/sites /home/frappe/sites-backup && mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
+RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
+#RUN mv /home/frappe/${BENCH_NAME}/sites /home/frappe/sites-backup && mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 
 USER root
-# Volume for externalizing the site assets
-COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/sites-backup/common_site_config.json
+COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/docker-bench/sites/common_site_config.json
 COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
-
+COPY --chown=frappe:frappe ./start.sh /home/frappe/${BENCH_NAME}/start.sh
 COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
-RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
+RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh
 
 ONBUILD COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
-ONBUILD COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
-ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoint.sh && sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
+ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
 
 # Cleanup
 RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \

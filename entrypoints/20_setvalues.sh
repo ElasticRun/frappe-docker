@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "set bench values"
+echo "Configuring Bench..."
 cd ${BENCH_HOME}
 bench set-mariadb-host ${DB_HOST}
 
@@ -21,3 +21,4 @@ then
     echo "Setting Admin password"
     bench set-config --global redis_cache admin_password ${ADMIN_PASSWORD}
 fi
+echo "Bench configured."
