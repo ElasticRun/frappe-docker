@@ -12,6 +12,9 @@ then
     if [ $STATUS -ne 0 ]
     then
         echo "ERROR: An error occurred while setting up new site. Please review logs, correct the error and retry."
+        # Removing lock and site_config.json files.
+        rm -f ${BENCH_HOME}/sites/*.lock
+        rm -f ${BENCH_HOME}/sites/${SITE}/site_config.json
         false
     else
         echo "Providing privileges to new user."

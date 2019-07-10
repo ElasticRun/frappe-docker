@@ -1,0 +1,9 @@
+kind: Endpoints
+apiVersion: v1
+metadata:
+ name: frappe-elk-ntex-com
+subsets:
+ - addresses:
+     - ip: frappe.elk.ntex.com
+   ports:
+     - port: 9200

@@ -1,22 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tredrun
+  name: er-frappe
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tredrun
+      app: er-frappe
   template:
     metadata:
       labels:
-        app: tredrun
+        app: er-frappe
     spec:
+      hostAliases:
+        - ip: 192.168.122.1
+          hostnames:
+            - frappe.db.ntex.com
+            - frappe-db-ntex-com
       containers:
       # Frappe Container
-      - name: er-frappe
-        image: dock.elasticrun.in/er-frappe-base:0.14-dev
-        imagePullPolicy: IfNotPresent
+      - name: er-frappe-container
+        image: localhost:32000/er-frappe-base:dev
+        imagePullPolicy: Always
         resources: {}
           # limits:
           #   memory: "256Mi"
@@ -30,35 +35,35 @@ spec:
             valueFrom:
               secretKeyRef:
                 key: db.host
-                name: trun-frappe-mariadb-secrets
+                name: er-frappe-secrets
           - name: DB_NAME
             valueFrom:
               secretKeyRef:
                 key: db.name
-                name: trun-frappe-mariadb-secrets
+                name: er-frappe-secrets
           - name: DB_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: db.password
-                name: trun-frappe-mariadb-secrets
+                name: er-frappe-secrets
           - name: ADMIN_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: admin.password
-                name: trun-frappe-mariadb-secrets
+                name: er-frappe-secrets
         stdin: true
         tty: true
         volumeMounts:
-        - mountPath: /home/frappe/${BENCH_NAME}/sites
+        - mountPath: /home/frappe/docker-bench/sites
           name: er-frappe-sites-vol
-        - mountPath: /home/frappe/${BENCH_NAME}/config/
+        - mountPath: /home/frappe/docker-bench/config/
           name: er-frappe-redis-config
-        - mountPath: /home/frappe/${BENCH_NAME}/logs
-          name: trun-frappe-logs-dir
+        - mountPath: /home/frappe/docker-bench/logs
+          name: er-frappe-logs-dir
       #Fluentd sidecar to publish logs from frappe onto ELK stack
       - name: fluentd
         image: dock.elasticrun.in/er-fluentd-elasticsearch:0.2-dev
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources: {}
         ports:
           - containerPort: 24224
@@ -66,9 +71,9 @@ spec:
         - mountPath: /fluentd/etc
           name: er-frappe-fluentd-config
         - mountPath: /fluentd/log
-          name: trun-frappe-logs-dir
+          name: er-frappe-logs-dir
       # Local redis cache in the pod
-      - name: redis-cache
+      - name: redis-cache-container
         image: redis:alpine
         command: ["redis-server","/etc/conf.d/redis_cache.conf"]
         resources: {}
@@ -81,7 +86,7 @@ spec:
         - mountPath: /etc/conf.d
           name: er-frappe-redis-cache-config
       # Local redis socket-io in the pod.
-      - name: redis-socketio
+      - name: redis-socketio-container
         image: redis:alpine
         command: ["redis-server","/etc/conf.d/redis_socketio.conf"]
         resources: {}
@@ -97,27 +102,27 @@ spec:
       volumes:
       - name: er-frappe-sites-vol
         persistentVolumeClaim:
-          claimName: trun-aks-beta-sites-pvc
+          claimName: er-frappe-sites-pvc
       - name: er-frappe-redis-config
         configMap:
-            name: trun-frappe-redis-config
+            name: er-frappe-redis-config
       - name : er-frappe-redis-cache-config
         configMap:
-          name: trun-frappe-redis-config
+          name: er-frappe-redis-config
           items:
           - key: redis_cache.conf
             path: redis_cache.conf
       - name : er-frappe-redis-socketio-config
         configMap:
-          name: trun-frappe-redis-config
+          name: er-frappe-redis-config
           items:
           - key: redis_socketio.conf
             path: redis_socketio.conf
       - name : er-frappe-fluentd-config
         configMap:
-          name : trun-frappe-fluent-config
+          name : er-frappe-fluentd-config
           items:
           - key : fluent.conf
             path: fluent.conf
-      - name : trun-frappe-logs-dir
+      - name : er-frappe-logs-dir
         emptyDir: {}

@@ -30,7 +30,6 @@ RUN echo '151.101.152.249 dl-cdn.alpinelinux.org' >> /etc/hosts \
   python-dev openblas lapack-dev cython coreutils \
   && npm install -g yarn
 
-ARG BENCH_NAME=docker-bench
 ARG GIT_AUTH_USER
 ARG GIT_AUTH_PASSWORD
 ARG FRAPPE_BRANCH
@@ -43,7 +42,7 @@ RUN echo "BENCH_URL = ${BENCH_URL}"
 RUN echo "FRAPPE URL = ${FRAPPE_URL}"
 
 ENV DB_HOST=mariadb
-ENV BENCH_NAME=${BENCH_NAME}
+ENV BENCH_NAME=docker-bench
 
 # OS User Setup
 RUN addgroup -S frappe && adduser -S frappe -G frappe && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers

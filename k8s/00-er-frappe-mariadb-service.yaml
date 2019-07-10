@@ -1,9 +1,9 @@
 kind: Service
 apiVersion: v1
 metadata:
- name: mariadb
+ name: frappe-db-ntex-com
 spec:
- type: ClusterIP
+ type: ExternalName
+ externalName: frappe.db.ntex.com
  ports:
  - port: 3306
-   targetPort: 3306

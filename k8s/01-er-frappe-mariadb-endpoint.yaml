@@ -1,9 +1,9 @@
 kind: Endpoints
 apiVersion: v1
 metadata:
- name: mariadb
+ name: frappe-db-ntex-com
 subsets:
  - addresses:
-     - ip: 192.168.122.1
+     - ip: frappe.db.ntex.com
    ports:
      - port: 3306
