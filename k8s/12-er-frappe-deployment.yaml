@@ -12,15 +12,14 @@ spec:
       labels:
         app: er-frappe
     spec:
-      hostAliases:
-        - ip: 192.168.122.1
-          hostnames:
-            - frappe.db.ntex.com
-            - frappe-db-ntex-com
+      # hostAliases:
+      #   - ip: 10.61.0.4
+      #     hostnames:
+      #       - frappe.db.ntex.com
       containers:
       # Frappe Container
       - name: er-frappe-container
-        image: localhost:32000/er-frappe-base:dev
+        image: dock.elasticrun.in/wr-frappe-base:dev
         imagePullPolicy: Always
         resources: {}
           # limits:
@@ -54,7 +53,7 @@ spec:
         stdin: true
         tty: true
         volumeMounts:
-        - mountPath: /home/frappe/docker-bench/sites
+        - mountPath: /home/frappe/docker-bench/sites/site1.docker
           name: er-frappe-sites-vol
         - mountPath: /home/frappe/docker-bench/config/
           name: er-frappe-redis-config

@@ -60,7 +60,7 @@ USER root
 COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/docker-bench/sites/common_site_config.json
 COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
-COPY --chown=frappe:frappe ./start.sh /home/frappe/${BENCH_NAME}/start.sh
+COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
 COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
 RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh
 
