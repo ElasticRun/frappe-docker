@@ -19,6 +19,7 @@ else
     if [ $? -ne 0 ]
     then
       SUCCESS=1
+      rm -f $BENCH_HOME/sites/${SITE}/.lock
       break
     fi
   done
