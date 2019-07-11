@@ -36,8 +36,8 @@ ARG FRAPPE_BRANCH
 ARG GIT_BENCH_URL=github.com/frappe/bench.git
 ARG GIT_FRAPPE_URL=github.com/frappe/frappe.git
 
-ENV BENCH_URL=git+https://${GIT_AUTH_USER}:${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_BENCH_URL}@master
-ENV FRAPPE_URL=https://${GIT_AUTH_USER}:${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_FRAPPE_URL}
+ENV BENCH_URL=git+https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_BENCH_URL}@master
+ENV FRAPPE_URL=https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_FRAPPE_URL}
 RUN echo "BENCH_URL = ${BENCH_URL}"
 RUN echo "FRAPPE URL = ${FRAPPE_URL}"
 
@@ -69,8 +69,7 @@ ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /ho
 
 # Cleanup
 RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
-  && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git \
-  && chmod u+x /home/frappe/${BENCH_NAME}/entrypoint.sh
+  && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
 
 #Execute
 USER frappe
