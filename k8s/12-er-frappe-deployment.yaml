@@ -19,7 +19,7 @@ spec:
       containers:
       # Frappe Container
       - name: er-frappe-container
-        image: dock.elasticrun.in/wr-frappe-base:dev
+        image: localhost:32000/er-frappe10-base:dev
         imagePullPolicy: Always
         resources: {}
           # limits:
@@ -61,7 +61,7 @@ spec:
           name: er-frappe-logs-dir
       #Fluentd sidecar to publish logs from frappe onto ELK stack
       - name: fluentd
-        image: dock.elasticrun.in/er-fluentd-elasticsearch:0.2-dev
+        image: dock.elasticrun.in/er-fluentd:dev
         imagePullPolicy: Always
         resources: {}
         ports:
