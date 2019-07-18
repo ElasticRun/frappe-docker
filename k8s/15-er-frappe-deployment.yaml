@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: er-frappe
+  name: er-frappe10
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: er-frappe
+      app: er-frappe10
   template:
     metadata:
       labels:
-        app: er-frappe
+        app: er-frappe10
     spec:
       # hostAliases:
       #   - ip: 10.61.0.4
@@ -19,7 +19,7 @@ spec:
       containers:
       # Frappe Container
       - name: er-frappe-container
-        image: dock.elasticrun.in/wr-frappe-base:dev
+        image: dock.elasticrun.in/er-frappe10-base:dev
         imagePullPolicy: Always
         resources: {}
           # limits:

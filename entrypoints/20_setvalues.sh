@@ -1,6 +1,7 @@
 #!/bin/sh
 echo "Configuring Bench..."
 cd ${BENCH_HOME}
+
 bench set-mariadb-host ${DB_HOST}
 
 bench set-common-config root_password ${DB_PASSWORD}

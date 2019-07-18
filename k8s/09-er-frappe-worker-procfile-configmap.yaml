@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: er-frappe-worker-procfile-config
+data:
+  #Procfile for bench instanct that runs web workers and background workers
+  Procfile: |
+    worker_short: bench worker --queue short
+    worker_long: bench worker --queue long
+    worker_default: bench worker --queue default

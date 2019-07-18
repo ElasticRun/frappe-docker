@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: er-frappe-node-socketio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: er-frappe-node-socketio
+  template:
+    metadata:
+      labels:
+        app: er-frappe-node-socketio
+    spec:
+      # hostAliases:
+      #   - ip: 10.61.0.4
+      #     hostnames:
+      #       - frappe.db.ntex.com
+      containers:
+      # Frappe Container
+      - name: er-frappe-node-socketio
+        image: dock.elasticrun.in/wr-frappe-base:dev
+        imagePullPolicy: Always
+        resources: {}
+          # limits:
+          #   memory: "256Mi"
+          #   cpu: "100m"
+        ports:
+          - containerPort: 9000
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /home/frappe/docker-bench/sites/site1.docker
+          name: er-frappe-sites-vol
+        - mountPath: /home/frappe/docker-bench/Procfile
+          name: er-frappe-node-socketio-procfile-config
+          subPath: Procfile
+        # - mountPath: /home/frappe/docker-bench/config/
+        #   name: er-frappe-redis-config
+        # - mountPath: /home/frappe/docker-bench/logs
+        #   name: er-frappe-logs-dir
+      restartPolicy: Always
+      volumes:
+      - name: er-frappe-sites-vol
+        persistentVolumeClaim:
+          claimName: er-frappe-sites-pvc
+      - name: er-frappe-node-socketio-procfile-config
+        configMap:
+            name: er-frappe-node-socketio-procfile-config
