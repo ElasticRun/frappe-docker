@@ -7,3 +7,4 @@ echo $BENCH_PID > $BENCH_HOME/${BENCH_NAME}.pid
 echo "Bench started with Process ID - ${BENCH_PID}"
 ps -eaf | grep ${BENCH_PID}
 echo "run $@"
+tail -f /home/frappe/docker-bench/logs/console.log
