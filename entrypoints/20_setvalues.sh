@@ -4,12 +4,12 @@ cd ${BENCH_HOME}
 
 bench set-mariadb-host ${DB_HOST}
 
-bench set-common-config root_password ${DB_PASSWORD}
+bench config set-common-config root_password ${DB_PASSWORD}
 
 if [ "X${ADMIN_PASSWORD}" != "X" ]
 then
     echo "Setting Admin password"
-    bench set-common-config admin_password ${ADMIN_PASSWORD}
+    bench config set-common-config admin_password ${ADMIN_PASSWORD}
 fi
 # bench set-config --global file_watcher_port 6787
 # bench set-config --global frappe_user frappe

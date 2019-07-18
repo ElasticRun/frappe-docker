@@ -55,13 +55,20 @@ spec:
         volumeMounts:
         - mountPath: /home/frappe/docker-bench/sites/site1.docker
           name: er-frappe-sites-vol
+          subPath: site1.docker
+        - mountPath: /home/frappe/docker-bench/sites/currentsite.txt
+          name: er-frappe-sites-vol
+          subPath: currentsite.txt
+        - mountPath: /home/frappe/docker-bench/sites/apps.txt
+          name: er-frappe-sites-vol
+          subPath: apps.txt
         - mountPath: /home/frappe/docker-bench/config/
           name: er-frappe-redis-config
         - mountPath: /home/frappe/docker-bench/logs
           name: er-frappe-logs-dir
       #Fluentd sidecar to publish logs from frappe onto ELK stack
       - name: fluentd
-        image: dock.elasticrun.in/er-fluentd-elasticsearch:0.2-dev
+        image: dock.elasticrun.in/er-fluentd:dev
         imagePullPolicy: Always
         resources: {}
         ports:

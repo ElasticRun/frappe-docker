@@ -4,6 +4,6 @@ metadata:
  name: frappe-db-ntex-com
 subsets:
  - addresses:
-     - ip: 10.61.0.4
+     - ip: 192.168.1.13
    ports:
      - port: 3306
