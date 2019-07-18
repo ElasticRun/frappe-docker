@@ -7,6 +7,9 @@ export SITE=${SITE_NAME:-site1.docker}
 SUCCESS=0
 if [ -f $BENCH_HOME/sites/${SITE}/.lock ]
 then
+  /bin/sh -c ${BENCH_HOME}/entrypoints/00_entry.sh
+  /bin/sh -c ${BENCH_HOME}/entrypoints/10_mkdirs.sh
+  /bin/sh -c ${BENCH_HOME}/entrypoints/20_setvalues.sh
   echo "Site already setup. Skipping initialization"
 else
   sudo touch $BENCH_HOME/sites/${SITE}/.lock
