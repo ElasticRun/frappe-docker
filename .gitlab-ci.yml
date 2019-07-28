@@ -14,7 +14,7 @@ dev-erfrappe-deploy:
     - dev
 
     
-beta-cas-deploy:
+beta-erfrappe-deploy:
   stage: deploy
   script:
     - pwd
@@ -28,7 +28,7 @@ beta-cas-deploy:
     - build-srv 
     - beta 
 
-prod-cas-deploy:
+prod-erfrappe-deploy:
   stage: deploy
   script:
     - pwd
