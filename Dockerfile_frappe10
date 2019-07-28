@@ -18,7 +18,7 @@ ENV LANG C.UTF-8
 #   schedule asn1crypto pycparser cffi cryptography pyopenssl pyasn1 ndg-httpsclient zxcvbn-python unittest-xml-reporting \
 #   oauthlib requests-oauthlib PyJWT PyPDF2 jdcal et-xmlfile openpyxl pyotp pyqrcode pypng cssselect lxml cachetools \
 #   cssutils premailer croniter googlemaps braintree future passlib httplib2 rsa pyasn1-modules google-auth \
-#   google-auth-httplib2 uritemplate google-api-python-client google-auth-oauthlib text-unidecode faker stripe coverage \
+#   google-auth-httplib2 uritemplate google-api-python-client google-auth-oauthlib text-unidecode faker stripe coverage req \
 #   smmap2 gitdb2
 
 
