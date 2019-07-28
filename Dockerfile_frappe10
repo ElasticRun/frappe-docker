@@ -30,13 +30,18 @@ RUN echo '151.101.152.249 dl-cdn.alpinelinux.org' >> /etc/hosts \
   python-dev openblas lapack-dev cython coreutils \
   && npm install -g yarn
 
+RUN apk -U add ca-certificates
+RUN apk update && apk upgrade && apk add git bash build-base sudo
+RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
+
 ARG GIT_AUTH_USER
 ARG GIT_AUTH_PASSWORD
 ARG FRAPPE_BRANCH=v10.x.x
 ARG GIT_BENCH_URL=github.com/frappe/bench.git
+ARG BENCH_BRANCH=v3.x
 ARG GIT_FRAPPE_URL=github.com/frappe/frappe.git
 
-ENV BENCH_URL=git+https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_BENCH_URL}@master
+ENV BENCH_URL=git+https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_BENCH_URL}@v3.x
 ENV FRAPPE_URL=https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_FRAPPE_URL}
 RUN echo "BENCH_URL = ${BENCH_URL}"
 RUN echo "FRAPPE URL = ${FRAPPE_URL}"
