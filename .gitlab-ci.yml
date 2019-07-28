@@ -4,8 +4,8 @@ dev-erfrappe-deploy:
     - pwd
     - ./build-frappe10.sh dev
     - ./build-frappe11.sh dev
-    - docker push dock.elasticrun.in:32000/er-frappe10-base:dev
-    - docker push dock.elasticrun.in:32000/er-frappe11-base:dev
+    - docker push dock.elasticrun.in/er-frappe10-base:dev
+    - docker push dock.elasticrun.in/er-frappe11-base:dev
   only:
     - dev
     - master
@@ -20,8 +20,8 @@ beta-cas-deploy:
     - pwd
     - ./build-frappe10.sh beta
     - ./build-frappe11.sh beta
-    - docker push dock.elasticrun.in:32000/er-frappe10-base:beta
-    - docker push dock.elasticrun.in:32000/er-frappe11-base:beta
+    - docker push dock.elasticrun.in/er-frappe10-base:beta
+    - docker push dock.elasticrun.in/er-frappe11-base:beta
   only:
     - beta-release
   tags:
@@ -34,8 +34,8 @@ prod-cas-deploy:
     - pwd
     - ./build-frappe10.sh release
     - ./build-frappe11.sh release
-    - docker push dock.elasticrun.in:32000/er-frappe10-base:release
-    - docker push dock.elasticrun.in:32000/er-frappe11-base:release
+    - docker push dock.elasticrun.in/er-frappe10-base:release
+    - docker push dock.elasticrun.in/er-frappe11-base:release
   only:
     - release
     - prod
