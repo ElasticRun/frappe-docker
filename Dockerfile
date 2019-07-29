@@ -30,6 +30,10 @@ RUN echo '151.101.152.249 dl-cdn.alpinelinux.org' >> /etc/hosts \
   python-dev openblas lapack-dev cython coreutils \
   && npm install -g yarn
 
+RUN apk -U add ca-certificates
+RUN apk update && apk upgrade && apk add git bash build-base sudo
+RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
+
 ARG GIT_AUTH_USER
 ARG GIT_AUTH_PASSWORD
 ARG FRAPPE_BRANCH
