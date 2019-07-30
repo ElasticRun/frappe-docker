@@ -37,7 +37,7 @@ RUN pip install ${BENCH_URL}
 # Create bench instance
 USER frappe
 RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} \
-  --ignore-exist --skip-redis-config-generation \
+  #--ignore-exist --skip-redis-config-generation \
   --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH:-v10.x.x} --verbose --frappe-path ${FRAPPE_URL}
 RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 
