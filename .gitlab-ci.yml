@@ -7,11 +7,10 @@ dev-erfrappe-deploy:
     - docker push dock.elasticrun.in/er-frappe10-base:dev
     - docker push dock.elasticrun.in/er-frappe11-base:dev
   only:
-    - dev
+    - develop
     - master
   tags:
-    - local
-    - dev
+    - build-srv
 
 
 beta-erfrappe-deploy:
