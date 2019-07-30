@@ -40,7 +40,8 @@ RUN pip install ${BENCH_URL}
 USER frappe
 RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} --ignore-exist \
   --skip-redis-config-generation --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH:-master} \
-  --verbose --frappe-path ${FRAPPE_URL}
+  --verbose --frappe-path ${FRAPPE_URL} && bench get-app --branch release \
+  https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
 RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe/${BENCH_NAME} &&
 RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 #RUN mv /home/frappe/${BENCH_NAME}/sites /home/frappe/sites-backup && mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
