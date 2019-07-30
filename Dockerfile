@@ -42,7 +42,8 @@ RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${
   --skip-redis-config-generation --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH:-master} \
   --verbose --frappe-path ${FRAPPE_URL} && cd /home/frappe/${BENCH_NAME} && bench get-app --branch release \
   https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
-RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe/${BENCH_NAME} && RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
+
+RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 #RUN mv /home/frappe/${BENCH_NAME}/sites /home/frappe/sites-backup && mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 
 USER root
