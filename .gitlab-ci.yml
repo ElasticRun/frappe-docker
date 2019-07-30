@@ -13,7 +13,7 @@ dev-erfrappe-deploy:
     - local
     - dev
 
-    
+
 beta-erfrappe-deploy:
   stage: deploy
   script:
@@ -25,8 +25,8 @@ beta-erfrappe-deploy:
   only:
     - beta-release
   tags:
-    - build-srv 
-    - beta 
+    - build-srv
+    - beta
 
 prod-erfrappe-deploy:
   stage: deploy
@@ -41,4 +41,4 @@ prod-erfrappe-deploy:
     - prod
   tags:
     - prod
-    - release 
+    - release
