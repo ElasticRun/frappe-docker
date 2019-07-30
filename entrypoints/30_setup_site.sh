@@ -23,6 +23,9 @@ then
         mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
             "delete from user where user = '${DB_NAME}' and host <> '%'; commit; flush privileges;" mysql
         bench set-config db_password ${DB_PASSWORD}
-        echo -n "${SITE}" > ${BENCH_HOME}/sites/currentsite.txt
+        echo "Setting spine configuration to - ${KAFKA_CONFIG}"
+        bench set-config --as-dict kafka ${KAFKA_CONFIG}
+        bench use ${SITE}
+        # echo -n "${SITE}" > ${BENCH_HOME}/sites/currentsite.txt
     fi
 fi
