@@ -1,3 +1,15 @@
+variables:
+  KAFKA_CONFIG: '{
+  "auto.offset.reset": "smallest",
+  "bootstrap.servers": "spine.ntex.com:10180",
+  "client.id": "er-frappe-docker",
+  "default.topic.config": {
+   "acks": "all"
+  },
+  "fetch.message.max.bytes": "81920",
+  "group.id": "er-frappe-docker-spine-client",
+  "request.required.acks": "1"
+ }'
 dev-erfrappe-deploy:
   stage: deploy
   script:
