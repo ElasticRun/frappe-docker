@@ -4,17 +4,17 @@ export SITE=${SITE_NAME:-site1.docker}
 #      && sudo cp -R /home/frappe/sites-backup/* ${BENCH_HOME}/sites/ \
 #      && sudo ln -s ${BENCH_HOME}/apps/frappe/frappe/public ${BENCH_HOME}/sites/assets/frappe \
 #      && sudo rm -rf /home/frappe/sites-backup
-if [ -d ${BENCH_HOME}/sites/common_site_config.json ] 
+if [ -d ${BENCH_HOME}/sites/common_site_config.json ]
 then
     sudo rm -rf ${BENCH_HOME}/sites/common_site_config.json
 fi
 
-if [ -d ${BENCH_HOME}/sites/apps.txt ] 
+if [ -d ${BENCH_HOME}/sites/apps.txt ]
 then
     sudo rm -rf ${BENCH_HOME}/sites/apps.txt
 fi
 
-if [ -d ${BENCH_HOME}/sites/currentsite.txt ] 
+if [ -d ${BENCH_HOME}/sites/currentsite.txt ]
 then
     sudo rm -rf ${BENCH_HOME}/sites/currentsite.txt
 fi
