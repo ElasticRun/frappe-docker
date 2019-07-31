@@ -14,8 +14,8 @@ dev-erfrappe-deploy:
   stage: deploy
   script:
     - pwd
-    - ./build-frappe10.sh dev
-    - ./build-frappe11.sh dev
+    - ./build-frappe10.sh develop
+    - ./build-frappe11.sh develop
     - docker push dock.elasticrun.in/er-frappe10-base:develop
     - docker push dock.elasticrun.in/er-frappe11-base:develop
   only:
@@ -29,8 +29,8 @@ beta-erfrappe-deploy:
   stage: deploy
   script:
     - pwd
-    - ./build-frappe10.sh beta
-    - ./build-frappe11.sh beta
+    - ./build-frappe10.sh beta-release
+    - ./build-frappe11.sh beta-release
     - docker push dock.elasticrun.in/er-frappe10-base:beta-release
     - docker push dock.elasticrun.in/er-frappe11-base:beta-release
   only:
