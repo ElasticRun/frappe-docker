@@ -10,7 +10,7 @@ ENV LANG C.UTF-8
 RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
   lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
   mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
-  python-dev openblas lapack-dev cython coreutils ca-certificates git bash sudo \
+  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx \
   && npm install -g yarn
 
 # Add librdkafka - required for spine that connects to kafka
@@ -45,7 +45,8 @@ RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${
   --verbose --frappe-path ${FRAPPE_URL} && cd /home/frappe/${BENCH_NAME} && bench get-app --branch release \
   https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
 
-RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
+RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints && chown -R frappe:frappe /home/frappe/${BENCH_NAME}/config \
+  && bench setup nginx
 #RUN mv /home/frappe/${BENCH_NAME}/sites /home/frappe/sites-backup && mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 
 USER root
