@@ -1,7 +1,17 @@
 #!/bin/sh
 echo "Configuring Bench..."
 cd ${BENCH_HOME}
-
+# Hack for ensuring that DB_HOST is correctly setup when using it as ExternalName service in Kubernetes
+echo "Getting service for DB..."
+sudo apk --update add jq
+# Query Kubernetes API and extract service type.
+export TOKEN=`cat /var/run/secrets/kubernetes.io/serviceaccount/token`
+NEW_DB_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/frappe-base/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("-db-ntex-com$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName' | tr -d '"'`
+if [ ! -z ${NEW_DB_HOST} ]
+then
+    echo "Updating DB Host to ${NEW_DB_HOST}"
+    DB_HOST=${NEW_DB_HOST}
+fi
 bench set-mariadb-host ${DB_HOST}
 
 bench config set-common-config -c root_password ${DB_PASSWORD}
