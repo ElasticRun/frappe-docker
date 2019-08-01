@@ -21,6 +21,30 @@ then
     echo "Setting Admin password"
     bench config set-common-config -c admin_password ${ADMIN_PASSWORD}
 fi
+
+# Fix redis ExternalName services.
+CACHE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/frappe-base/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-cache$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
+QUEUE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/frappe-base/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-queue$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
+SOCKETIO_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/frappe-base/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-socketio$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
+
+if [ ! -z ${CACHE_HOST} ]
+then
+    echo "Updating redis_cache"
+    bench config set-common-config -c redis_cache "redis://${CACHE_HOST}"
+fi
+
+if [ ! -z ${QUEUE_HOST} ]
+then
+    echo "Updating redis_queue"
+    bench config set-common-config -c redis_queue "redis://${QUEUE_HOST}"
+fi
+
+if [ ! -z ${SOCKETIO_HOST} ]
+then
+    echo "Updating redis_socketio"
+    bench config set-common-config -c redis_socketio "redis://${SOCKETIO_HOST}"
+fi
+
 # bench set-config --global file_watcher_port 6787
 # bench set-config --global frappe_user frappe
 # bench set-config --global gunicorn_workers 4
