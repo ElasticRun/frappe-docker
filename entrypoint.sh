@@ -18,7 +18,7 @@ else
   for file in ${BENCH_HOME}/entrypoints/*.sh
   do
     echo "Executing $file..."
-    /bin/sh -c "$file"
+    . "$file"
     if [ $? -ne 0 ]
     then
       SUCCESS=1

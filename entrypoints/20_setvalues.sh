@@ -10,7 +10,7 @@ NEW_DB_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/frappe-bas
 if [ ! -z ${NEW_DB_HOST} ]
 then
     echo "Updating DB Host to ${NEW_DB_HOST}"
-    DB_HOST=${NEW_DB_HOST}
+    export DB_HOST=${NEW_DB_HOST}
 fi
 bench set-mariadb-host ${DB_HOST}
 
