@@ -19,7 +19,8 @@ then
     sudo rm -rf ${BENCH_HOME}/sites/currentsite.txt
 fi
 
-cp /home/frappe/common_site_config_docker.json ${BENCH_HOME}/sites/common_site_config.json
+# No longer required as sites directory is now within the image.
+#cp /home/frappe/common_site_config_docker.json ${BENCH_HOME}/sites/common_site_config.json
 sudo chown -R frappe:frappe ${BENCH_HOME}/sites ${BENCH_HOME}/logs
 if [ ! -f ${BENCH_HOME}/sites/apps.txt ]
 then
