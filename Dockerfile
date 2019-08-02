@@ -42,8 +42,7 @@ RUN pip install ${BENCH_URL}
 USER frappe
 RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} --ignore-exist \
   --skip-redis-config-generation --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH:-master} \
-  --verbose --frappe-path ${FRAPPE_URL} && cd /home/frappe/${BENCH_NAME} && bench get-app --branch release \
-  https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
+  --verbose --frappe-path ${FRAPPE_URL} && cd /home/frappe/${BENCH_NAME}
 
 RUN cd /home/frappe/${BENCH_NAME} && ./env/bin/pip install gevent
 
@@ -67,6 +66,11 @@ ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /ho
 RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
   && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* \
   && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
+
+
+ARG CUR_DATE=2019-08-02
+USER frappe
+RUN bench get-app --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
 
 #Execute
 USER frappe
