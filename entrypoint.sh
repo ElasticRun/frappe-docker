@@ -5,6 +5,7 @@ export BENCH_HOME=$HOME/$BENCH_NAME
 export BENCH_LOG_FILE=$BENCH_HOME/logs/console.log
 export SITE=${SITE_NAME:-site1.docker}
 SUCCESS=0
+ls -lrt $BENCH_HOME/sites/${SITE}
 if [ -f $BENCH_HOME/sites/${SITE}/.lock ]
 then
   # /bin/sh -c ${BENCH_HOME}/entrypoints/00_entry.sh
