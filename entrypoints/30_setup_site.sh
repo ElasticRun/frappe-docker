@@ -5,7 +5,7 @@ sudo chown -R frappe:frappe ${BENCH_HOME}/sites
 if [ ! -d ${BENCH_HOME}/sites/${SITE} -o ! -f ${BENCH_HOME}/sites/${SITE}/site_config.json ]
 then
     echo "Deleting existing user, if any..."
-    mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "delete from user where user = '${DB_NAME}'; commit; flush privileges;" mysql
+    mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "drop user '${DB_NAME}'; delete from user where user = '${DB_NAME}'; commit; flush privileges;" mysql
     echo "Creating generic user."
     mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
             "create user \`${DB_NAME}\`@\`%\` identified by '${DB_PASSWORD}'; commit; flush privileges;" mysql
