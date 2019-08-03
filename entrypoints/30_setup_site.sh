@@ -11,6 +11,9 @@ then
             "create user \`${DB_NAME}\`@\`%\` identified by '${DB_PASSWORD}'; commit; flush privileges;" mysql
     mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
             "grant all privileges on \`${DB_NAME}\`.* to \`${DB_NAME}\`@\`%\` with grant option; commit; flush privileges;" mysql
+    cp /home/frappe/${BENCH_NAME}/site_config_docker.json /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json
+    sed s/###DB_NAME###/${DB_NAME}/g /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json
+    sed s/###DB_PASSWORD###/${DB_PASSWORD}/g /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json
     echo "creating new site ${SITE}"
     bench new-site --force --db-name ${DB_NAME} --mariadb-root-username root --admin-password ${ADMIN_PASSWORD} --verbose ${SITE}
     STATUS=$?
