@@ -6,8 +6,13 @@ if [ ! -d ${BENCH_HOME}/sites/${SITE} -o ! -f ${BENCH_HOME}/sites/${SITE}/site_c
 then
     echo "Deleting existing user, if any..."
     mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "delete from user where user = '${DB_NAME}'; commit; flush privileges;" mysql
+    echo "Creating generic user."
+    mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
+            "create user \`${DB_NAME}\`@\`%\` identified by '${DB_PASSWORD}' with grant option; commit; flush privileges;" mysql
+    mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
+            "grant all privileges on \`${DB_NAME}\`.* to \`${DB_NAME}\`@\`%\`; commit; flush privileges;" mysql
     echo "creating new site ${SITE}"
-    bench er-new-site --force --db-name ${DB_NAME} --mariadb-root-username root --admin-password ${ADMIN_PASSWORD} --verbose ${SITE}
+    bench new-site --force --db-name ${DB_NAME} --mariadb-root-username root --admin-password ${ADMIN_PASSWORD} --verbose ${SITE}
     STATUS=$?
     if [ $STATUS -ne 0 ]
     then
