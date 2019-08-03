@@ -8,9 +8,9 @@ then
     mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "delete from user where user = '${DB_NAME}'; commit; flush privileges;" mysql
     echo "Creating generic user."
     mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
-            "create user \`${DB_NAME}\`@\`%\` identified by '${DB_PASSWORD}' with grant option; commit; flush privileges;" mysql
+            "create user \`${DB_NAME}\`@\`%\` identified by '${DB_PASSWORD}'; commit; flush privileges;" mysql
     mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
-            "grant all privileges on \`${DB_NAME}\`.* to \`${DB_NAME}\`@\`%\`; commit; flush privileges;" mysql
+            "grant all privileges on \`${DB_NAME}\`.* to \`${DB_NAME}\`@\`%\` with grant option; commit; flush privileges;" mysql
     echo "creating new site ${SITE}"
     bench new-site --force --db-name ${DB_NAME} --mariadb-root-username root --admin-password ${ADMIN_PASSWORD} --verbose ${SITE}
     STATUS=$?
@@ -24,7 +24,7 @@ then
     else
         echo "Providing privileges to new user."
         mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
-            "grant all privileges on \`${DB_NAME}\`.* to \`${DB_NAME}\`@\`%\` identified by '${DB_PASSWORD}'; commit; flush privileges;" mysql
+            "grant all privileges on \`${DB_NAME}\`.* to \`${DB_NAME}\`@\`%\` identified by '${DB_PASSWORD}' with grant option; commit; flush privileges;" mysql
         mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
             "delete from user where user = '${DB_NAME}' and host <> '%'; commit; flush privileges;" mysql
         bench set-config db_password ${DB_PASSWORD}
