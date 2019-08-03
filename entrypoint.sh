@@ -13,6 +13,10 @@ then
   # /bin/sh -c ${BENCH_HOME}/entrypoints/20_setvalues.sh
   echo "Site already setup. Skipping initialization"
 else
+  if [ ! -d $BENCH_HOME/sites/${SITE} ]
+  then
+    mkdir -p $BENCH_HOME/sites/${SITE}
+  fi
   sudo touch $BENCH_HOME/sites/${SITE}/.lock
   sudo chown frappe:frappe $BENCH_HOME/sites/${SITE}/.lock
 
