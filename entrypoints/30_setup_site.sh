@@ -30,7 +30,6 @@ then
             "grant all privileges on \`${DB_NAME}\`.* to \`${DB_NAME}\`@\`%\` identified by '${DB_PASSWORD}' with grant option; commit; flush privileges;" mysql
         mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
             "delete from user where user = '${DB_NAME}' and host <> '%'; commit; flush privileges;" mysql
-        bench set-config db_password ${DB_PASSWORD}
         echo "Setting spine configuration to - ${KAFKA_CONFIG}"
         bench set-config --as-dict kafka "'$(echo $KAFKA_CONFIG | tr -d "'" | tr -d "\\" | tr -d "\\n")'"
         # Above command adds \ characters in site_config.json. Remove those using tr.
