@@ -7,7 +7,7 @@ then
     echo "Deleting existing user, if any..."
     mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "delete from user where user = '${DB_NAME}'; commit; flush privileges;" mysql
     echo "creating new site ${SITE}"
-    bench new-site --force --db-name ${DB_NAME} --mariadb-root-username root --admin-password ${ADMIN_PASSWORD} --verbose ${SITE}
+    bench er-new-site --force --db-name ${DB_NAME} --mariadb-root-username root --admin-password ${ADMIN_PASSWORD} --verbose ${SITE}
     STATUS=$?
     if [ $STATUS -ne 0 ]
     then
