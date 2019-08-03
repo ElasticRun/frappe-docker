@@ -24,7 +24,10 @@ then
             "delete from user where user = '${DB_NAME}' and host <> '%'; commit; flush privileges;" mysql
         bench set-config db_password ${DB_PASSWORD}
         echo "Setting spine configuration to - ${KAFKA_CONFIG}"
-        bench set-config --as-dict kafka '${KAFKA_CONFIG}'
+        bench set-config --as-dict kafka "'$(echo $KAFKA_CONFIG | tr -d "'" | tr -d "\\" | tr -d "\\n")'"
+        # Above command adds \ characters in site_config.json. Remove those using tr.
+        mv ${BENCH_HOME}/sites/${SITE}/site_config.json ${BENCH_HOME}/sites/${SITE}/site_config.json_orig
+        cat ${BENCH_HOME}/sites/${SITE}/site_config.json_orig |tr -d "\\" | sed s/"\"kafka\": \""/"\"kafka\": "/g | sed s/"\"1\" }\""/"\"1\" }"/g > ${BENCH_HOME}/sites/${SITE}/site_config.json
         bench use ${SITE}
         # echo -n "${SITE}" > ${BENCH_HOME}/sites/currentsite.txt
     fi
