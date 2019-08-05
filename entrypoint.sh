@@ -26,6 +26,7 @@ else
     . "$file"
     if [ $? -ne 0 ]
     then
+      echo "$file execution failed. Exiting..."
       SUCCESS=1
       rm -f $BENCH_HOME/sites/${SITE}/.lock
       break
@@ -37,6 +38,9 @@ if [ $SUCCESS -eq 0 ]
 then
   echo "Starting bench process..."
   /bin/sh -c ./run.sh
+else
+  echo "Setup of container failed. Please check logs, correct the error and retry."
+  exit 1
 fi
 exec "$@"
 read
