@@ -3,16 +3,20 @@ SITE=`cat ${BENCH_HOME}/sites/currentsite.txt`
 INSTALLED_APPS=`bench list-apps`
 INSTALLED_APPS_COUNT=`echo $INSTALLED_APPS | wc -l`
 APPS_DIR_COUNT=`ls -l ./apps | wc -l`
-
+echo "Installed Apps - ${INSTALLED_APPS}(${INSTALLED_APPS_COUNT})"
+echo "Apps Dir Count - ${APPS_DIR_COUNT}"
 if [ ${APPS_DIR_COUNT} -ne ${INSTALLED_APPS_COUNT} ]
 then
-    echo > ${BENCH_HOME}/sites/apps.txt
+    echo "Clearing apps.txt"
+    sudo echo > ${BENCH_HOME}/sites/apps.txt
+    echo "apps.txt cleared"
     for app in `ls ${BENCH_HOME}/apps`
     do
         # TODO - Check if app in apps dir is available in installed apps.
         # Install only if not available.
+        echo "Processing application $app"
         export VAL=$app
-        echo "$app" >> ${BENCH_HOME}/sites/apps.txt
+        sudo echo "$app" >> ${BENCH_HOME}/sites/apps.txt
         awk 'BEGIN
             {
                 liststr = ENVIRON["INSTALLED_APPS"]
