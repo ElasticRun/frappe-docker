@@ -8,7 +8,7 @@ echo "Apps Dir Count - ${APPS_DIR_COUNT}"
 if [ ${APPS_DIR_COUNT} -ne ${INSTALLED_APPS_COUNT} ]
 then
     echo "Clearing apps.txt"
-    sudo echo > ${BENCH_HOME}/sites/apps.txt
+    echo > ${BENCH_HOME}/sites/apps.txt
     echo "apps.txt cleared"
     for app in `ls ${BENCH_HOME}/apps`
     do
@@ -21,13 +21,13 @@ then
         AWK_RESULT=$(awk -e 'BEGIN {
             liststr = ENVIRON["INSTALLED_APPS"]
             val = ENVIRON["VAL"]
-            print "val = ", val
+            #print "val = ", val
             arrlen = split(liststr, APP_ARR, sep="\n")
-            print "APP_ARR = ", APP_ARR[1], " length = ", arrlen
+            #print "APP_ARR = ", APP_ARR[1], " length = ", arrlen
             retval = 1
             i = 1
-            while ( and(i <= arrlen, retval == 1) ) {  printf("%i - key - %s\n", i, APP_ARR[i]);  if (APP_ARR[i]==val) {retval = 0}; i += 1 }
-            print "retval - ", retval
+            while ( and(i <= arrlen, retval == 1) ) {  if (APP_ARR[i]==val) {retval = 0}; i += 1 }
+            #print "retval - ", retval
             print retval
         }')
         echo "AWK Result = ${AWK_RESULT}"
