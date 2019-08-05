@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 export BENCH_NAME=${BENCH_NAME}
 echo "BENCH_NAME = $BENCH_NAME"
 export BENCH_HOME=$HOME/$BENCH_NAME
