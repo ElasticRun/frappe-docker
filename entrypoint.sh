@@ -12,6 +12,21 @@ then
   # /bin/sh -c ${BENCH_HOME}/entrypoints/10_mkdirs.sh
   # /bin/sh -c ${BENCH_HOME}/entrypoints/20_setvalues.sh
   echo "Site already setup. Skipping initialization"
+  
+  if [ -d $BENCH_HOME/boot_scripts ]
+    for file in ${BENCH_HOME}/boot_scripts/*.sh
+    do
+        echo "Executing $file..."
+        . "$file"
+        if [ $? -ne 0 ]
+        then
+            echo "$file execution failed. Exiting..."
+            SUCCESS=1
+            break
+        fi
+    done
+  fi
+  
 else
   if [ ! -d $BENCH_HOME/sites/${SITE} ]
   then
