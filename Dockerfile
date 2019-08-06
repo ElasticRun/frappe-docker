@@ -50,7 +50,7 @@ RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints && chown -R frappe:frappe /h
 #RUN mv /home/frappe/${BENCH_NAME}/sites /home/frappe/sites-backup && mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 
 USER root
-COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/docker-bench/sites/common_site_config.json
+COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/docker-bench/common_site_config_docker.json
 COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
