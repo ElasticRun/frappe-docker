@@ -14,6 +14,7 @@ then
   echo "Site already setup. Skipping initialization"
   
   if [ -d $BENCH_HOME/boot_scripts ]
+  then
     for file in ${BENCH_HOME}/boot_scripts/*.sh
     do
         echo "Executing $file..."
