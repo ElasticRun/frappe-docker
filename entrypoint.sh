@@ -4,6 +4,7 @@ echo "BENCH_NAME = $BENCH_NAME"
 export BENCH_HOME=$HOME/$BENCH_NAME
 export BENCH_LOG_FILE=$BENCH_HOME/logs/console.log
 export SITE=${SITE_NAME:-site1.docker}
+sudo nginx -c /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
 SUCCESS=0
 ls -lrt $BENCH_HOME/sites/${SITE}
 if [ -f $BENCH_HOME/sites/${SITE}/.lock ]
@@ -36,6 +37,8 @@ fi
 # Irrespective of site setup as part of startup, bench is always started.
 if [ $SUCCESS -eq 0 ]
 then
+  echo "Stopping startup nginx. Will be replaced with actual NGinx"
+  sudo nginx -s QUIT
   echo "Starting bench process..."
   /bin/sh -c ./run.sh
 else

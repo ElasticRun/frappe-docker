@@ -1,16 +1,12 @@
 #!/bin/bash
 cd /home/frappe/docker-bench
-LANGUAGES=`echo 'select distinct language from tabUser;'|bench mariadb`
-if [ $? -eq 0 ]
+bench console <<EOF
+languages = ['en-US', 'en-UK', 'en-IN', 'en']
+for lang in languages:
+    frappe.translate.load_lang(lang=lang)
+    print("Loaded translations for ", lang)
+EOF
+if [ $? -ne 0 ]
 then
-    for lang in ${LANGUAGES}
-    do
-        bench execute frappe.translate.load_lang --kwargs '{"lang": "'$lang'"}' 2>&1 > /home/frappe/docker-bench/logs/${lang}-cache.log
-        if [ $? -eq 0 ]
-        then
-            echo "INFO: ${lang} translations cached successfully"
-        else
-            echo "WARN: ${lang} transactions could not be cached."
-        fi
-    done
+    echo "WARN: Pre-loading of language translations failed"
 fi
