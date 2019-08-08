@@ -9,7 +9,7 @@ ARG GIT_AUTH_USER
 ARG GIT_AUTH_PASSWORD
 ARG FRAPPE_BRANCH=v10.x.x
 ARG GIT_BENCH_URL=github.com/frappe/bench.git
-ARG BENCH_BRANCH=v3.x
+ARG BENCH_BRANCH=master
 ARG GIT_FRAPPE_URL=github.com/frappe/frappe.git
 
 ENV FRAPPE_BRANCH=${FRAPPE_BRANCH}
@@ -17,7 +17,7 @@ ENV GIT_FRAPPE_URL=${GIT_FRAPPE_URL}
 ENV GIT_AUTH_USER=${GIT_AUTH_USER}
 ENV GIT_AUTH_PASSWORD=${GIT_AUTH_PASSWORD}
 
-ENV BENCH_URL=git+https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_BENCH_URL}@v3.x
+ENV BENCH_URL=git+https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_BENCH_URL}@${BENCH_BRANCH}
 ENV FRAPPE_URL=https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_FRAPPE_URL}
 RUN echo "BENCH_URL = ${BENCH_URL}"
 RUN echo "FRAPPE URL = ${FRAPPE_URL}"
@@ -33,9 +33,6 @@ RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-d
   python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq sudo \
   && npm install -g yarn && pip install pip==9.0.3 && pip install req
 
-RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
-
-
 # OS User Setup
 RUN addgroup -S frappe && adduser -S frappe -G frappe && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
@@ -44,7 +41,7 @@ RUN pip install ${BENCH_URL}
 # Create bench instance
 USER frappe
 RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} \
-  #--ignore-exist --skip-redis-config-generation \
+  --python /usr/local/bin/python --ignore-exist --skip-redis-config-generation \
   --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH} --verbose --frappe-path ${FRAPPE_URL}
 RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 
@@ -53,11 +50,14 @@ RUN cd /home/frappe/${BENCH_NAME} && ./env/bin/pip install redis==2.10.6
 USER root
 COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/docker-bench/sites/common_site_config.json
 COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
+COPY --chown=frappe:frappe ./boot_scripts/*.sh /home/frappe/${BENCH_NAME}/boot_scripts/
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
 COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config/nginx.conf
+COPY --chown=frappe:frappe ./nginx-startup.conf /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
 COPY --chown=frappe:frappe ./Procfile_frappe10 /home/frappe/${BENCH_NAME}/Procfile
 RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh && \
+    chmod u+x /home/frappe/${BENCH_NAME}/boot_scripts/*.sh && \
     ln -s /home/frappe/${BENCH_NAME}/config/nginx.conf /etc/nginx/conf.d/nginx.conf && mkdir -p /run/nginx
 
 ONBUILD COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
