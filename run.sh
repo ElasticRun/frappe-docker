@@ -18,6 +18,7 @@ then
     done
 fi
 if [ $SUCCESS -ne 0 ]
+then
     echo "One of the boot scripts failed. Exiting container"
     exit 1
 fi
