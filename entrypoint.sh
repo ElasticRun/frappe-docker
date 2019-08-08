@@ -38,7 +38,7 @@ fi
 if [ $SUCCESS -eq 0 ]
 then
   echo "Stopping startup nginx. Will be replaced with actual NGinx"
-  sudo nginx -s QUIT
+  sudo nginx -s quit
   echo "Starting bench process..."
   /bin/sh -c ./run.sh
 else
