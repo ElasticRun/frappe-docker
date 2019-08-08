@@ -32,6 +32,7 @@ then
     echo -n 'frappe' > ${BENCH_HOME}/sites/apps.txt
 fi
 
-if [ ! -f ${BENCH_HOME}/sites/common_site_config.json]
+if [ ! -f ${BENCH_HOME}/sites/common_site_config.json ]
+then
     cp /home/frappe/docker-bench/common_site_config_docker.json ${BENCH_HOME}/sites/common_site_config.json
 fi
