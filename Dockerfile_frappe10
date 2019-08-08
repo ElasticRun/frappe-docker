@@ -9,7 +9,7 @@ ARG GIT_AUTH_USER
 ARG GIT_AUTH_PASSWORD
 ARG FRAPPE_BRANCH=v10.x.x
 ARG GIT_BENCH_URL=github.com/frappe/bench.git
-ARG BENCH_BRANCH=v3.x
+ARG BENCH_BRANCH=master
 ARG GIT_FRAPPE_URL=github.com/frappe/frappe.git
 
 ENV FRAPPE_BRANCH=${FRAPPE_BRANCH}
@@ -44,7 +44,7 @@ RUN pip install ${BENCH_URL}
 # Create bench instance
 USER frappe
 RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} \
-  #--ignore-exist --skip-redis-config-generation \
+  --ignore-exist --skip-redis-config-generation \
   --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH} --verbose --frappe-path ${FRAPPE_URL}
 RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 
