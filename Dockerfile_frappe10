@@ -33,9 +33,6 @@ RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-d
   python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq sudo \
   && npm install -g yarn && pip install pip==9.0.3 && pip install req
 
-RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
-
-
 # OS User Setup
 RUN addgroup -S frappe && adduser -S frappe -G frappe && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
