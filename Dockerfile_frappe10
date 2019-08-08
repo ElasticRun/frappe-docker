@@ -5,21 +5,17 @@ USER root
 # Generate locale C.UTF-8 for mariadb and general locale dataopenjpeg
 ENV LANG C.UTF-8
 
-# Install all pre-requisites
-RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
-  lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
-  mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
-  python-dev openblas lapack-dev cython coreutils ca-certificates git bash sudo \
-  && npm install -g yarn && pip install pip==9.0.3 && pip install req
-
-RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
-
 ARG GIT_AUTH_USER
 ARG GIT_AUTH_PASSWORD
 ARG FRAPPE_BRANCH=v10.x.x
 ARG GIT_BENCH_URL=github.com/frappe/bench.git
 ARG BENCH_BRANCH=v3.x
 ARG GIT_FRAPPE_URL=github.com/frappe/frappe.git
+
+ENV FRAPPE_BRANCH=${FRAPPE_BRANCH}
+ENV GIT_FRAPPE_URL=${GIT_FRAPPE_URL}
+ENV GIT_AUTH_USER=${GIT_AUTH_USER}
+ENV GIT_AUTH_PASSWORD=${GIT_AUTH_PASSWORD}
 
 ENV BENCH_URL=git+https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_BENCH_URL}@v3.x
 ENV FRAPPE_URL=https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_FRAPPE_URL}
@@ -28,6 +24,17 @@ RUN echo "FRAPPE URL = ${FRAPPE_URL}"
 
 ENV DB_HOST=mariadb
 ENV BENCH_NAME=docker-bench
+
+
+# Install all pre-requisites
+RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
+  lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
+  mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
+  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq sudo \
+  && npm install -g yarn && pip install pip==9.0.3 && pip install req
+
+RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
+
 
 # OS User Setup
 RUN addgroup -S frappe && adduser -S frappe -G frappe && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
@@ -38,7 +45,7 @@ RUN pip install ${BENCH_URL}
 USER frappe
 RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} \
   #--ignore-exist --skip-redis-config-generation \
-  --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH:-v10.x.x} --verbose --frappe-path ${FRAPPE_URL}
+  --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH} --verbose --frappe-path ${FRAPPE_URL}
 RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
 
 RUN cd /home/frappe/${BENCH_NAME} && ./env/bin/pip install redis==2.10.6
@@ -47,9 +54,11 @@ USER root
 COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/docker-bench/sites/common_site_config.json
 COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
+COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config/nginx.conf
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
 COPY --chown=frappe:frappe ./Procfile_frappe10 /home/frappe/${BENCH_NAME}/Procfile
-RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh
+RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh && \
+    ln -s /home/frappe/${BENCH_NAME}/config/nginx.conf /etc/nginx/conf.d/nginx.conf && mkdir -p /run/nginx
 
 ONBUILD COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
 ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
