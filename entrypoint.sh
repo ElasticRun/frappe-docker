@@ -7,7 +7,7 @@ export BENCH_LOG_FILE=$BENCH_HOME/logs/console.log
 export SITE=${SITE_NAME:-site1.docker}
 sudo nginx -c /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
 SUCCESS=0
-ls -lrt $BENCH_HOME/sites/${SITE}
+ls -lart $BENCH_HOME/sites/${SITE}
 if [ -f $BENCH_HOME/sites/${SITE}/.lock ]
 then
   # /bin/sh -c ${BENCH_HOME}/entrypoints/00_entry.sh
