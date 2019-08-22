@@ -2,11 +2,12 @@
 echo "Configuring Bench..."
 cd ${BENCH_HOME}
 # Hack for ensuring that DB_HOST is correctly setup when using it as ExternalName service in Kubernetes
+export NAMESPACE=${TARGET_NAMESPACE:-default}
 echo "Getting service for DB..."
 sudo apk --update add jq
 # Query Kubernetes API and extract service type.
 export TOKEN=`cat /var/run/secrets/kubernetes.io/serviceaccount/token`
-NEW_DB_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/frappe-base/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("-db-ntex-com$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName' | tr -d '"'`
+NEW_DB_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("-db-ntex-com$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName' | tr -d '"'`
 if [ ! -z ${NEW_DB_HOST} ]
 then
     echo "Updating DB Host to ${NEW_DB_HOST}"
@@ -23,9 +24,9 @@ then
 fi
 
 # Fix redis ExternalName services.
-CACHE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/frappe-base/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-cache$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
-QUEUE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/frappe-base/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-queue$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
-SOCKETIO_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/frappe-base/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-socketio$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
+CACHE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-cache$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
+QUEUE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-queue$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
+SOCKETIO_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-socketio$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
 
 if [ ! -z ${CACHE_HOST} ]
 then
