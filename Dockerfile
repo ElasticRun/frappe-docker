@@ -74,8 +74,9 @@ RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BEN
 
 ARG CUR_DATE=2019-08-02
 USER frappe
-RUN cd /home/frappe/${BENCH_NAME} \
+RUN cd /home/frappe/${BENCH_NAME}/apps \
     && git clone --verbose --single-branch --depth=1 --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git \
+    && cd /home/frappe/${BENCH_NAME}/ \
     && ./env/bin/pip install ./apps/spine
 # RUN cd /home/frappe/${BENCH_NAME} && bench get-app --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
 
