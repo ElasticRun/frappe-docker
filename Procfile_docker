@@ -6,4 +6,3 @@ worker_long: bench worker --queue long
 worker_default: bench worker --queue default
 
 spine_dispatcher: bench aio-eventdispatcher --queue kafka_events
-spine_worker: bench jsonworker --queue kafka_events
