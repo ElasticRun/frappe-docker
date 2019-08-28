@@ -14,7 +14,7 @@
     "socketio_port": 9000,
     "update_bench_on_update": false,
     "webserver_port": 8000,
-    "root_password": "password",
+    "root_password": "Ntex@123",
     "db_host": "frappe.db.ntex.com",
     "admin_password": "admin"
 }
