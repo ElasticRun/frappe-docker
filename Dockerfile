@@ -44,7 +44,7 @@ RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${
   --skip-redis-config-generation --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH:-master} \
   --verbose --frappe-path ${FRAPPE_URL} && cd /home/frappe/${BENCH_NAME}
 
-RUN cd /home/frappe/${BENCH_NAME} && ./env/bin/pip install gevent
+RUN cd /home/frappe/${BENCH_NAME} && ./env/bin/pip install gevent watchgod
 
 RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints && chown -R frappe:frappe /home/frappe/${BENCH_NAME}/config
 #RUN mv /home/frappe/${BENCH_NAME}/sites /home/frappe/sites-backup && mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
@@ -80,6 +80,7 @@ RUN cd /home/frappe/${BENCH_NAME}/apps \
     && ./env/bin/pip install ./apps/spine
 # RUN cd /home/frappe/${BENCH_NAME} && bench get-app --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
 
+RUN cd /home/frappe/${BENCH_NAME} && bench setup requirements && bench build
 #Execute
 USER frappe
 WORKDIR /home/frappe/${BENCH_NAME}
