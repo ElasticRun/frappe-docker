@@ -42,10 +42,10 @@ then
   echo "Stopping startup nginx. Will be replaced with actual NGinx"
   sudo nginx -s quit
   echo "Starting bench process..."
-  /bin/sh -c ./run.sh
+  /bin/sh -c ./run.sh $@
 else
   echo "Setup of container failed. Please check logs, correct the error and retry."
   exit 1
 fi
-exec "$@"
+# exec "$@"
 read

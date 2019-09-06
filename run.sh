@@ -23,7 +23,16 @@ then
     exit 1
 fi
 sudo nginx
-nohup bench start --no-dev >> $BENCH_LOG_FILE 2>&1 &
+
+# Check if specific worker is specified then start bench with args
+if [ $# -ne 0 ]
+then
+    echo "Starting bench with args - $@"
+    nohup bench start --no-dev $@ >> $BENCH_LOG_FILE 2>&1 &
+else
+    nohup bench start --no-dev >> $BENCH_LOG_FILE 2>&1 &
+fi
+
 BENCH_PID=`echo $!`
 echo $BENCH_PID > $BENCH_HOME/${BENCH_NAME}.pid
 echo "Bench started with Process ID - ${BENCH_PID}"
