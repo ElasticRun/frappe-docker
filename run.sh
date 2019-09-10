@@ -29,11 +29,12 @@ if [ $# -ne 0 ]
 then
     echo "Starting bench with args - $@"
     nohup bench start --no-dev $@ >> $BENCH_LOG_FILE 2>&1 &
+    BENCH_PID=`echo $!`
 else
     nohup bench start --no-dev >> $BENCH_LOG_FILE 2>&1 &
+    BENCH_PID=`echo $!`
 fi
 
-BENCH_PID=`echo $!`
 echo $BENCH_PID > $BENCH_HOME/${BENCH_NAME}.pid
 echo "Bench started with Process ID - ${BENCH_PID}"
 ps -eaf | grep ${BENCH_PID}
