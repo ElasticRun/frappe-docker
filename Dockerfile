@@ -53,16 +53,20 @@ USER root
 COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/docker-bench/common_site_config_docker.json
 COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
 COPY --chown=frappe:frappe ./boot_scripts/*.sh /home/frappe/${BENCH_NAME}/boot_scripts/
+COPY --chown=frappe:frappe ./postboot_scripts/*.sh /home/frappe/${BENCH_NAME}/postboot_scripts/
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
-COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
-COPY --chown=frappe:frappe ./supervisor-docker /home/frappe/${BENCH_NAME}/config/supervisor.conf
+#COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
+COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisor/supervisord.conf
+COPY --chown=frappe:frappe ./supervisor-docker.conf /home/frappe/${BENCH_NAME}/config/supervisor.conf
 COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config/nginx.conf
 COPY --chown=frappe:frappe ./nginx-startup.conf /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
 COPY --chown=frappe:frappe ./site_config_docker.json /home/frappe/${BENCH_NAME}/site_config_docker.json
 RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh \
-  && chmod u+x /home/frappe/${BENCH_NAME}/boot_scripts/*.sh \
-  && ln -s /home/frappe/${BENCH_NAME}/config/nginx.conf /etc/nginx/conf.d/nginx.conf && mkdir -p /run/nginx
+  && chmod u+x /home/frappe/${BENCH_NAME}/boot_scripts/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/postboot_scripts/*.sh \
+  && ln -s /home/frappe/${BENCH_NAME}/config/nginx.conf /etc/nginx/conf.d/nginx.conf && mkdir -p /run/nginx \
+  && mkdir -p /var/run && ln -s /home/frappe/${BENCH_NAME}/config/supervisor.conf /etc/supervisor/conf.d/frappe.conf \
+  && mkdir -p /var/log
 
 ONBUILD COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
 ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
@@ -71,7 +75,6 @@ ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /ho
 RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
   && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* \
   && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
-
 
 ARG CUR_DATE=2019-08-02
 USER frappe
