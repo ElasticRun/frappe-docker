@@ -36,6 +36,27 @@ else
     fi
   done
 fi
+
+echo "Looking for boot_scripts"
+if [ -d $BENCH_HOME/boot_scripts ]
+then
+    for file in ${BENCH_HOME}/boot_scripts/*.sh
+    do
+        echo "Executing $file..."
+        . "$file"
+        if [ $? -ne 0 ]
+        then
+            echo "$file execution failed. Exiting..."
+            SUCCESS=1
+            break
+        fi
+    done
+fi
+if [ $SUCCESS -ne 0 ]
+then
+    echo "One of the boot scripts failed. Exiting container"
+    exit 1
+fi
 # Irrespective of site setup as part of startup, bench is always started.
 if [ $SUCCESS -eq 0 ]
 then
@@ -47,5 +68,3 @@ else
   echo "Setup of container failed. Please check logs, correct the error and retry."
   exit 1
 fi
-# exec "$@"
-read

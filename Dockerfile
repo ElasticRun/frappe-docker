@@ -10,7 +10,7 @@ ENV LANG C.UTF-8
 RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
   lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
   mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
-  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq \
+  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor \
   && npm install -g yarn
 
 # Add librdkafka - required for spine that connects to kafka
@@ -56,6 +56,7 @@ COPY --chown=frappe:frappe ./boot_scripts/*.sh /home/frappe/${BENCH_NAME}/boot_s
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
 COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
+COPY --chown=frappe:frappe ./supervisor-docker /home/frappe/${BENCH_NAME}/config/supervisor.conf
 COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config/nginx.conf
 COPY --chown=frappe:frappe ./nginx-startup.conf /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
 COPY --chown=frappe:frappe ./site_config_docker.json /home/frappe/${BENCH_NAME}/site_config_docker.json
@@ -75,9 +76,9 @@ RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BEN
 ARG CUR_DATE=2019-08-02
 USER frappe
 RUN cd /home/frappe/${BENCH_NAME}/apps \
-    && git clone --verbose --single-branch --depth=1 --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git \
-    && cd /home/frappe/${BENCH_NAME} \
-    && ./env/bin/pip install ./apps/spine
+  && git clone --verbose --single-branch --depth=1 --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git \
+  && cd /home/frappe/${BENCH_NAME} \
+  && ./env/bin/pip install ./apps/spine
 # RUN cd /home/frappe/${BENCH_NAME} && bench get-app --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
 
 RUN cd /home/frappe/${BENCH_NAME} && bench setup requirements && bench build
