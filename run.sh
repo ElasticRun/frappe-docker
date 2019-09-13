@@ -2,10 +2,28 @@
 BENCH_HOME=/home/frappe/${BENCH_NAME}
 cd ${BENCH_HOME}
 SUCCESS=0
-echo "Looking for boot_scripts"
-if [ -d $BENCH_HOME/boot_scripts ]
+
+sudo nginx
+# Check if specific worker is specified then start bench with args
+if [ $# -ne 0 ]
 then
-    for file in ${BENCH_HOME}/boot_scripts/*.sh
+    echo "Starting bench with args - $@"
+    sudo supervisorctl start $@ >> $BENCH_LOG_FILE 2>&1 &
+    BENCH_PID=`echo $!`
+else
+    sudo supervisorctl start all >> $BENCH_LOG_FILE 2>&1 &
+    BENCH_PID=`echo $!`
+fi
+
+echo $BENCH_PID > $BENCH_HOME/${BENCH_NAME}.pid
+echo "Bench started with Process ID - ${BENCH_PID}"
+ps -eaf | grep ${BENCH_PID}
+echo "run $@"
+
+echo "Looking for postboot_scripts"
+if [ -d $BENCH_HOME/postboot_scripts ]
+then
+    for file in ${BENCH_HOME}/postboot_scripts/*.sh
     do
         echo "Executing $file..."
         . "$file"
@@ -19,15 +37,8 @@ then
 fi
 if [ $SUCCESS -ne 0 ]
 then
-    echo "One of the boot scripts failed. Exiting container"
-    exit 1
+    echo "One of the post boot scripts failed... Please check logs for more information"
 fi
-sudo nginx
-nohup bench start --no-dev >> $BENCH_LOG_FILE 2>&1 &
-BENCH_PID=`echo $!`
-echo $BENCH_PID > $BENCH_HOME/${BENCH_NAME}.pid
-echo "Bench started with Process ID - ${BENCH_PID}"
-ps -eaf | grep ${BENCH_PID}
-echo "run $@"
+
 tail -F /home/frappe/docker-bench/logs/console.log -F /home/frappe/docker-bench/logs/access.log \
     -F /home/frappe/docker-bench/logs/bench.log -F /home/frappe/docker-bench/logs/frappe.log
