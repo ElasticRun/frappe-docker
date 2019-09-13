@@ -57,7 +57,7 @@ COPY --chown=frappe:frappe ./postboot_scripts/*.sh /home/frappe/${BENCH_NAME}/po
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
 #COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
-COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisor/supervisord.conf
+COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisord.conf
 COPY --chown=frappe:frappe ./supervisor-docker.conf /home/frappe/${BENCH_NAME}/config/supervisor.conf
 COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config/nginx.conf
 COPY --chown=frappe:frappe ./nginx-startup.conf /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
@@ -65,8 +65,8 @@ COPY --chown=frappe:frappe ./site_config_docker.json /home/frappe/${BENCH_NAME}/
 RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh \
   && chmod u+x /home/frappe/${BENCH_NAME}/boot_scripts/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/postboot_scripts/*.sh \
   && ln -s /home/frappe/${BENCH_NAME}/config/nginx.conf /etc/nginx/conf.d/nginx.conf && mkdir -p /run/nginx \
-  && mkdir -p /var/run && ln -s /home/frappe/${BENCH_NAME}/config/supervisor.conf /etc/supervisor/conf.d/frappe.conf \
-  && mkdir -p /var/log
+  && mkdir -p /var/run && mkdir -p /var/log \
+  && ln -s /home/frappe/${BENCH_NAME}/config/supervisor.conf /etc/supervisor.d/frappe.conf
 
 ONBUILD COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
 ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
