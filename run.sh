@@ -12,15 +12,11 @@ if [ $# -ne 0 ]
 then
     echo "Starting bench with args - $@"
     sudo supervisorctl start $@ >> $BENCH_LOG_FILE 2>&1 &
-    BENCH_PID=`echo $!`
 else
-    sudo supervisorctl start all >> $BENCH_LOG_FILE 2>&1 &
-    BENCH_PID=`echo $!`
+    sudo supervisorctl start docker-bench-web:* async-workers:* >> $BENCH_LOG_FILE 2>&1 &
 fi
-echo "Started web server with ${GUNI_WORKERS} workers and ${GUNI_WORKER_CONNECTIONS} connections per worker."
+echo "Started gunicorn server with ${GUNI_WORKERS} workers and ${GUNI_WORKER_CONNECTIONS} connections per worker."
 
-echo $BENCH_PID > $BENCH_HOME/${BENCH_NAME}.pid
-echo "Bench started with Process ID - ${BENCH_PID}"
 ps -eaf | grep ${BENCH_PID}
 echo "run $@"
 
