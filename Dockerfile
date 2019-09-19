@@ -10,7 +10,7 @@ ENV LANG C.UTF-8
 RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
   lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
   mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
-  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor \
+  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less \
   && npm install -g yarn
 
 # Add librdkafka - required for spine that connects to kafka
