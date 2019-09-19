@@ -10,7 +10,7 @@ ENV LANG C.UTF-8
 RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
   lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
   mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
-  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor \
+  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less \
   && npm install -g yarn
 
 # Add librdkafka - required for spine that connects to kafka
@@ -56,6 +56,7 @@ COPY --chown=frappe:frappe ./boot_scripts/*.sh /home/frappe/${BENCH_NAME}/boot_s
 COPY --chown=frappe:frappe ./postboot_scripts/*.sh /home/frappe/${BENCH_NAME}/postboot_scripts/
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
+COPY --chown=frappe:frappe ./migrate.sh /home/frappe/${BENCH_NAME}/migrate.sh
 #COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
 COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisord.conf
 COPY --chown=frappe:frappe ./supervisor-docker.conf /home/frappe/${BENCH_NAME}/config/supervisor.conf
