@@ -56,6 +56,7 @@ COPY --chown=frappe:frappe ./boot_scripts/*.sh /home/frappe/${BENCH_NAME}/boot_s
 COPY --chown=frappe:frappe ./postboot_scripts/*.sh /home/frappe/${BENCH_NAME}/postboot_scripts/
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
+COPY --chown=frappe:frappe ./migrate.sh /home/frappe/${BENCH_NAME}/migrate.sh
 #COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
 COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisord.conf
 COPY --chown=frappe:frappe ./supervisor-docker.conf /home/frappe/${BENCH_NAME}/config/supervisor.conf
