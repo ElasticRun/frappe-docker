@@ -1,0 +1,211 @@
+# Default values for er-frappe.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Number of PODs to be started
+replicaCount: 1
+targetNamespace: frappe11
+
+# Target Environment - can be only beta-release or release
+branch: develop
+
+# Allows for applications to define migration strategy deployed as initContainers
+# The commands array is mandatory if this is enabled.
+# Command will be executed using the same image, env and volumes as standard application
+# Note that application will not be up and running when initContainers are executed.
+# Scripts mentioned here must be able to execute successfully even when the application is not running
+# The application containers will not be started until these scripts are completed successfully.
+migration:
+  enabled: false
+  scripts:
+    - "/home/frappe/docker-bench/migrate.sh"
+
+persistence:
+  # only azure, gke and local supported
+  type: gke
+  # only 'file' or 'disk' supported for azure. Ignored for local
+  subtype: gce-pd
+  capacityInGi: 10
+  # Storage account should already exist. Used only for type: azure
+  #storageaccount: erbk8sappall
+  # File share by this name must already exist in the storage account mentioned above.
+  # This file share should also already have blank files named apps.txt and currentsite.txt.
+  # Also copy common_site_config.json file with configuration details.
+  # Used only for type: azure
+  #sharename: er-bk8s-test-site-share
+  # base64 encoded storage account access key. Used only for type: azure
+  #storageaccountkey: "V0FFOEdabWttZFRtWXE0cUF5TGd4azk1OGF4c1FzYUlSYlNQQWlJNk53L3IrbGZGbU40TG45ZERKZDhnQlZJalp3WWlCMFJOZ1dRN2lKUTFlN25JWnc9PQ=="
+  #location: sea
+  # Type & replication for persistent disk used in GKE - used only for type: gke
+  pdType: pd-standard
+  replicationType: none
+  pdName: er-bk8s-test-site-pd
+
+redisserver:
+  enabled: true
+  image:
+    repository: redis
+    tag: alpine
+    pullPolicy: IfNotPresent
+  cache:
+    clusterEnabled: false
+    #Will be used only if cluster is enabled.
+    replicaCount: 6
+    service:
+      type: ClusterIP
+      port: 13000
+    listenport: 6379
+    maxmemory: 292mb
+    persistence:
+      enabled: false
+      storageCapacityinGi: 1
+  queue:
+    clusterEnabled: false
+    #Will be used only if cluster is enabled.
+    replicaCount: 6
+    service:
+      type: ClusterIP
+      port: 11000
+    listenport: 6381
+    persistence:
+      enabled: false
+      storageCapacityinGi: 1
+  socketio:
+    clusterEnabled: false
+    #Will be used only if cluster is enabled.
+    replicaCount: 6
+    service:
+      type: ClusterIP
+      port: 12000
+    listenport: 6380
+    persistence:
+      enabled: false
+      storageCapacityinGi: 1
+
+# This configuration will not be used if redisserver.enabled is true.
+redis:
+  cache:
+    targetHost: frappe11-cache-ntex-com
+    targetPort: 13000
+  socketio:
+    targetHost: frappe11-socketio-ntex-com
+    targetPort: 12000
+  queue:
+    targetHost: frappe11-queue-ntex-com
+    targetPort: 11000
+
+# Image details
+image:
+  #Image to be used for frappe/erpnext based application
+  frappeapp:
+    # Image name (including the registry, if using private registry)
+    repository: dock.elasticrun.in/er-frappe11-base
+    # Pull policy for the image above.
+    pullPolicy: Always
+    readinessProbe:
+      httpGetPath: /app-health
+    livenessProbe:
+      httpGetPath: /app-health
+  # Image to be used for monitoring sidecar for frappe container.
+  redis:
+    repository: redis
+    tag: alpine
+    pullPolicy: IfNotPresent
+  monitoring:
+    #
+    enabled: false
+    repository:
+    tag:
+    pullPolicy:
+    port:
+    protocol:
+  fluentd:
+    enabled: true
+    repository: dock.elasticrun.in/er-fluentd-base
+    pullPolicy: Always
+    externalPort: 24224
+    elasticHost: elasticsearch.ntex.com
+    elasticPort: 9200
+    indexname: er-bk8s-app-all
+    gelfEnabled: true
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+db:
+  port: 3306
+  # Should be base64 encoded value of the actual password
+  # encoded Value for 'Ntex@123'
+  rootPassword: TnRleEAxMjM=
+
+web:
+  gunicorn:
+    connections_per_worker: 200
+    workers: 4
+
+## Optional /etc/hosts contents
+etchosts:
+  - ip: 10.60.0.4
+    hostnames:
+      - beta-release-spine.ntex.com
+  - ip: 10.210.2.21
+    hostnames:
+      - release-spine.ntex.com
+  - ip: 10.160.0.23
+    hostnames:
+      - beta-release-db.ntex.com
+      - release-db.ntex.com
+      - frappe11-db-ntex-com
+  - ip: 10.76.0.66
+    hostnames:
+      - beta-release-elasticsearch.ntex.com
+      - release-elasticsearch.ntex.com
+
+  # - ip: 1
+  #   hostnames:
+  #     - release-db.ntex.com
+
+site:
+  # Must be base64 encoded value for administrator password for the newly created site.
+  # encoded value for Nt3x!@#
+  adminPassword: TnQzeCFAIw==
+  dbname: frappe11db
+
+ingress:
+  enabled: false
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
