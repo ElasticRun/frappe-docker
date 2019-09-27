@@ -10,7 +10,7 @@ ENV LANG C.UTF-8
 RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
   lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
   mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
-  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less \
+  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less dhclient \
   && npm install -g yarn
 
 # Add librdkafka - required for spine that connects to kafka
@@ -86,6 +86,11 @@ RUN cd /home/frappe/${BENCH_NAME}/apps \
 # RUN cd /home/frappe/${BENCH_NAME} && bench get-app --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
 
 RUN cd /home/frappe/${BENCH_NAME} && bench setup requirements && bench build
+
+#Using Google's DNS servers
+RUN echo 'nameserver 8.8.8.8' > /etc/resolv.conf
+COPY ./dhclient.conf /etc/dhcp/dhclient.conf
+
 #Execute
 USER frappe
 WORKDIR /home/frappe/${BENCH_NAME}

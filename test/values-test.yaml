@@ -16,7 +16,7 @@ branch: develop
 # Scripts mentioned here must be able to execute successfully even when the application is not running
 # The application containers will not be started until these scripts are completed successfully.
 migration:
-  enabled: false
+  enabled: true
   scripts:
     - "/home/frappe/docker-bench/migrate.sh"
 
