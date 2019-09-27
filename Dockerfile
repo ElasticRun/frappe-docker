@@ -87,10 +87,10 @@ RUN cd /home/frappe/${BENCH_NAME}/apps \
 
 RUN cd /home/frappe/${BENCH_NAME} && bench setup requirements && bench build
 
-USER root
-#Using Google's DNS servers
-RUN echo 'nameserver 8.8.8.8' > /etc/resolv.conf
-COPY ./dhclient.conf /etc/dhcp/dhclient.conf
+# USER root
+# #Using Google's DNS servers
+# RUN echo 'nameserver 8.8.8.8' > /etc/resolv.conf
+# COPY ./dhclient.conf /etc/dhcp/dhclient.conf
 
 #Execute
 USER frappe
