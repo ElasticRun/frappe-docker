@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 BENCH_HOME=/home/frappe/${BENCH_NAME}
 cd ${BENCH_HOME}
 SUCCESS=0
@@ -13,11 +13,11 @@ then
     echo "Starting bench with args - $@"
     sudo supervisorctl start $@ >> $BENCH_LOG_FILE 2>&1 &
 else
-    sudo supervisorctl start docker-bench-web:* async-workers:* >> $BENCH_LOG_FILE 2>&1 &
+    sudo supervisorctl start all >> $BENCH_LOG_FILE 2>&1 &
 fi
 echo "Started gunicorn server with ${GUNI_WORKERS} workers and ${GUNI_WORKER_CONNECTIONS} connections per worker."
 
-ps -eaf | grep ${BENCH_PID}
+#ps -eaf | grep ${BENCH_PID}
 echo "run $@"
 
 echo "Looking for postboot_scripts"

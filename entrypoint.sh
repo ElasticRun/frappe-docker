@@ -64,8 +64,8 @@ then
   sudo nginx -s quit
   echo "Starting supervisor"
   sudo supervisord --configuration /etc/supervisord.conf
-  echo "Starting bench process..."
-  /bin/sh -c ./run.sh $@
+  echo "Starting bench process... Arguments - $@"
+  ./run.sh $@
 else
   echo "Setup of container failed. Please check logs, correct the error and retry."
   exit 1
