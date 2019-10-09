@@ -66,6 +66,7 @@ COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config
 COPY --chown=frappe:frappe ./nginx-startup.conf /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
 COPY --chown=frappe:frappe ./site_config_docker.json /home/frappe/${BENCH_NAME}/site_config_docker.json
 RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh \
+  && chmod u+x /home/frappe/${BENCH_NAME}/bench.default.env \
   && chmod u+x /home/frappe/${BENCH_NAME}/boot_scripts/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/postboot_scripts/*.sh \
   && ln -s /home/frappe/${BENCH_NAME}/config/nginx.conf /etc/nginx/conf.d/nginx.conf && mkdir -p /run/nginx \
   && mkdir -p /etc/supervisor.d && mkdir -p /var/run && mkdir -p /var/log/supervisor \

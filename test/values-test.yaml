@@ -16,7 +16,7 @@ branch: develop
 # Scripts mentioned here must be able to execute successfully even when the application is not running
 # The application containers will not be started until these scripts are completed successfully.
 migration:
-  enabled: true
+  enabled: false
   scripts:
     - "/home/frappe/docker-bench/migrate.sh"
 
@@ -156,15 +156,17 @@ etchosts:
   - ip: 10.210.2.21
     hostnames:
       - release-spine.ntex.com
-  - ip: 10.160.0.23
+  - ip: 10.75.0.97
     hostnames:
       - beta-release-db.ntex.com
       - release-db.ntex.com
+      - develop-db-ntex-com
       - frappe11-db-ntex-com
-  - ip: 10.76.0.66
+  - ip: 10.70.0.8
     hostnames:
       - beta-release-elasticsearch.ntex.com
       - release-elasticsearch.ntex.com
+      - develop-elasticsearch.ntex.com
 
   # - ip: 1
   #   hostnames:
