@@ -21,7 +21,7 @@ fi
 
 SUCCESS=0
 ls -lart $BENCH_HOME/sites/${SITE}
-if [ -f $BENCH_HOME/sites/${SITE}/.lock -a $IS_WEB -eq 0 ]
+if [ -f $BENCH_HOME/sites/${SITE}/.lock ]
 then
   echo "Site already setup. Performing partial initialization..."
   . ${BENCH_HOME}/entrypoints/20_setvalues.sh
