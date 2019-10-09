@@ -1,19 +1,36 @@
 #!/bin/bash
 echo "Starting pod for frappe application"
-export BENCH_NAME=${BENCH_NAME}
+echo "Setting up environment variables..."
+. /home/frappe/docker-bench/bench.default.env
+if [ -f /home/frappe/docker-bench/config/env/bench.env ]
+then
+  echo "Setting up environment variable overrides..."
+  . /home/frappe/docker-bench/config/env/bench.env
+fi
+
 echo "BENCH_NAME = $BENCH_NAME"
-export BENCH_HOME=$HOME/$BENCH_NAME
-export BENCH_LOG_FILE=$BENCH_HOME/logs/console.log
-export SITE=${SITE_NAME:-site1.docker}
-sudo nginx -c /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
+# Assume this is not a web container.
+IS_WEB=1
+if [ $# -gt 0 ]
+then
+  ARG1=$1
+  # This check depends on content of supervisor.conf file
+  echo $ARG1 | grep -F -q 'docker-bench-web:*'
+  IS_WEB=$?
+fi
+
+if [ $IS_WEB -eq 0 ]
+then
+  #Start nginx only if this is a web container.
+  sudo nginx -c /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
+fi
+
 SUCCESS=0
 ls -lart $BENCH_HOME/sites/${SITE}
 if [ -f $BENCH_HOME/sites/${SITE}/.lock ]
 then
-  # /bin/sh -c ${BENCH_HOME}/entrypoints/00_entry.sh
-  # /bin/sh -c ${BENCH_HOME}/entrypoints/10_mkdirs.sh
-  # /bin/sh -c ${BENCH_HOME}/entrypoints/20_setvalues.sh
-  echo "Site already setup. Skipping initialization"
+  echo "Site already setup. Performing partial initialization..."
+  . ${BENCH_HOME}/entrypoints/20_setvalues.sh
 else
   echo "Setting up new site ${SITE}"
   if [ ! -d $BENCH_HOME/sites/${SITE} ]
@@ -60,8 +77,11 @@ fi
 # Irrespective of site setup as part of startup, bench is always started.
 if [ $SUCCESS -eq 0 ]
 then
-  echo "Stopping startup nginx. Will be replaced with actual NGinx"
-  sudo nginx -s quit
+  if [ $IS_WEB -eq 0 ]
+  then
+    echo "Stopping startup nginx. Will be replaced with actual NGinx"
+    sudo nginx -s quit
+  fi
   echo "Starting supervisor"
   sudo supervisord --configuration /etc/supervisord.conf
   echo "Starting bench process... Arguments - $@"

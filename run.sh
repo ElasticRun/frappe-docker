@@ -5,8 +5,23 @@ SUCCESS=0
 
 export GUNI_WORKER_CONNECTIONS=${GUNI_WORKER_CONNECTIONS:-200}
 export GUNI_WORKERS=${GUNI_WORKERS:-4}
+# TODO Find a way to keep this check in single common place.
+# Assume this is not a web container.
+IS_WEB=1
+if [ $# -gt 0 ]
+then
+  ARG1=$1
+  # This check depends on content of supervisor.conf file
+  echo $ARG1 | grep -F -q 'docker-bench-web:*'
+  IS_WEB=$?
+fi
 
-sudo nginx
+if [ $IS_WEB -eq 0 ]
+then
+    #Start nginx only if this is a web container.
+    sudo nginx
+fi
+
 # Check if specific worker is specified then start bench with args
 if [ $# -ne 0 ]
 then
