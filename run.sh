@@ -25,9 +25,9 @@ fi
 if [ $# -ne 0 ]
 then
     echo "Starting bench with args - $@"
-    sudo -E supervisorctl start $@ >> $BENCH_LOG_FILE 2>&1 &
+    sudo supervisorctl start $@ >> $BENCH_LOG_FILE 2>&1 &
 else
-    sudo -E supervisorctl start all >> $BENCH_LOG_FILE 2>&1 &
+    sudo supervisorctl start all >> $BENCH_LOG_FILE 2>&1 &
 fi
 echo "Started gunicorn server with ${GUNI_WORKERS} workers and ${GUNI_WORKER_CONNECTIONS} connections per worker."
 
