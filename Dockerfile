@@ -58,6 +58,7 @@ COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
 COPY --chown=frappe:frappe ./migrate.sh /home/frappe/${BENCH_NAME}/migrate.sh
 COPY --chown=frappe:frappe ./checkjobhealth.sh /home/frappe/${BENCH_NAME}/checkjobhealth.sh
+COPY --chown=frappe:frappe ./setenv.sh /home/frappe/${BENCH_NAME}/setenv.sh
 COPY --chown=frappe:frappe ./bench.default.env /home/frappe/${BENCH_NAME}/bench.default.env
 #COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
 COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisord.conf

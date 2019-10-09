@@ -1,12 +1,6 @@
 #!/bin/bash
 echo "Starting pod for frappe application"
-echo "Setting up environment variables..."
-. /home/frappe/docker-bench/bench.default.env
-if [ -f /home/frappe/docker-bench/config/env/bench.env ]
-then
-  echo "Setting up environment variable overrides..."
-  . /home/frappe/docker-bench/config/env/bench.env
-fi
+. ./setenv.sh
 
 echo "BENCH_NAME = $BENCH_NAME"
 # Assume this is not a web container.
@@ -83,7 +77,7 @@ then
     sudo nginx -s quit
   fi
   echo "Starting supervisor"
-  sudo supervisord --configuration /etc/supervisord.conf
+  sudo . ./setenv.sh && supervisord --configuration /etc/supervisord.conf
   echo "Starting bench process... Arguments - $@"
   ./run.sh $@
 else

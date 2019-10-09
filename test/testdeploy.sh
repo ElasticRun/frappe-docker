@@ -16,4 +16,4 @@
 # fi
 helm repo add --username repouser --password Ntex@123 er-develop https://helm.elasticrun.in/helm/develop
 helm repo update
-helm upgrade frappe11-test --install -f ./values-test.yaml --set persistence.pdName=er-bk8s-test-site-pd er-develop/er-frappe
+helm upgrade frappe11-test --namespace frappe11 --install -f ./values-test.yaml --set persistence.pdName=er-bk8s-test-site-pd er-develop/er-frappe

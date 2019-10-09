@@ -45,7 +45,7 @@ persistence:
   nfsServer: "10.68.0.2"
   # Base path where the files will be saved. Release name directory is expected to exist in this path.
   # The actual files should exist within the directory named with release name.
-  nfsBasePath: /erbk8sappall/ntex-vol/non-prod-apps/er-bk8s-app-all/frappe11/frappe11-test
+  nfsBasePath: /erbk8sappall/ntex-vol/non-prod-apps/er-bk8s-app-all/frappe11
 
 redisserver:
   enabled: true
