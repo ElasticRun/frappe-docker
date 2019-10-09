@@ -1,5 +1,4 @@
 #!/bin/bash
-exec &> logfile.txt
 echo "Starting pod for frappe application"
 export BENCH_NAME=${BENCH_NAME}
 echo "BENCH_NAME = $BENCH_NAME"
