@@ -19,16 +19,16 @@ fi
 if [ $IS_WEB -eq 0 ]
 then
     #Start nginx only if this is a web container.
-    sudo nginx
+    sudo -E nginx
 fi
 
 # Check if specific worker is specified then start bench with args
 if [ $# -ne 0 ]
 then
     echo "Starting bench with args - $@"
-    sudo supervisorctl start $@ >> $BENCH_LOG_FILE 2>&1 &
+    sudo -E supervisorctl start $@ >> $BENCH_LOG_FILE 2>&1 &
 else
-    sudo supervisorctl start all >> $BENCH_LOG_FILE 2>&1 &
+    sudo -E supervisorctl start all >> $BENCH_LOG_FILE 2>&1 &
 fi
 echo "Started gunicorn server with ${GUNI_WORKERS} workers and ${GUNI_WORKER_CONNECTIONS} connections per worker."
 

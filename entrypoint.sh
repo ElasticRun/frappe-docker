@@ -16,7 +16,7 @@ fi
 if [ $IS_WEB -eq 0 ]
 then
   #Start nginx only if this is a web container.
-  sudo nginx -c /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
+  sudo -E nginx -c /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
 fi
 
 SUCCESS=0
@@ -77,7 +77,7 @@ then
     sudo nginx -s quit
   fi
   echo "Starting supervisor"
-  sudo . ./setenv.sh && supervisord --configuration /etc/supervisord.conf
+  sudo -E supervisord --configuration /etc/supervisord.conf
   echo "Starting bench process... Arguments - $@"
   ./run.sh $@
 else
