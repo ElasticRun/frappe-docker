@@ -5,4 +5,5 @@ if [ -f /home/frappe/docker-bench/config/env/bench.env ]
 then
   echo "Setting up environment variable overrides..."
   . /home/frappe/docker-bench/config/env/bench.env
+  env
 fi

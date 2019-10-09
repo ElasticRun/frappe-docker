@@ -76,6 +76,8 @@ then
     echo "Stopping startup nginx. Will be replaced with actual NGinx"
     sudo nginx -s quit
   fi
+  echo "Environment Variables - "
+  env
   echo "Starting supervisor"
   sudo -E supervisord --configuration /etc/supervisord.conf
   echo "Starting bench process... Arguments - $@"

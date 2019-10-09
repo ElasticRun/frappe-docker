@@ -19,9 +19,8 @@ fi
 if [ $IS_WEB -eq 0 ]
 then
     #Start nginx only if this is a web container.
-    sudo -E nginx
+    sudo nginx
 fi
-
 # Check if specific worker is specified then start bench with args
 if [ $# -ne 0 ]
 then
