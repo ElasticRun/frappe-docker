@@ -144,6 +144,7 @@ service:
   port: 80
 
 db:
+  hostIP: 10.75.0.97
   port: 3306
   # Should be base64 encoded value of the actual password
   # encoded Value for 'Ntex@123'
