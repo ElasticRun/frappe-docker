@@ -23,8 +23,8 @@ SUCCESS=0
 ls -lart $BENCH_HOME/sites/${SITE}
 if [ -f $BENCH_HOME/sites/${SITE}/.lock ]
 then
-  echo "Site already setup. Performing partial initialization..."
-  . ${BENCH_HOME}/entrypoints/20_setvalues.sh
+  echo "Site already setup. Skipping initialization..."
+  #. ${BENCH_HOME}/entrypoints/20_setvalues.sh
 else
   echo "Setting up new site ${SITE}"
   if [ ! -d $BENCH_HOME/sites/${SITE} ]
