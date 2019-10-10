@@ -16,7 +16,7 @@ branch: develop
 # Scripts mentioned here must be able to execute successfully even when the application is not running
 # The application containers will not be started until these scripts are completed successfully.
 migration:
-  enabled: true
+  enabled: false
   scripts:
     - "/home/frappe/docker-bench/migrate.sh"
 
@@ -24,7 +24,7 @@ persistence:
   # only azure, gke and local supported
   type: gke
   # only 'file' or 'disk' supported for azure. Ignored for local
-  subtype: gce-pd
+  subtype: nfs
   capacityInGi: 10
   # Storage account should already exist. Used only for type: azure
   #storageaccount: erbk8sappall
@@ -40,6 +40,12 @@ persistence:
   pdType: pd-standard
   replicationType: none
   pdName: er-bk8s-test-site-pd
+
+  # NFS Server Details along with path which should be used to hold site data - used only for type: gke, subtype: nfs
+  nfsServer: "10.68.0.2"
+  # Base path where the files will be saved. Release name directory is expected to exist in this path.
+  # The actual files should exist within the directory named with release name.
+  nfsBasePath: /erbk8sappall/ntex-vol/non-prod-apps/er-bk8s-app-all/frappe11
 
 redisserver:
   enabled: true
@@ -156,15 +162,17 @@ etchosts:
   - ip: 10.210.2.21
     hostnames:
       - release-spine.ntex.com
-  - ip: 10.160.0.23
+  - ip: 10.75.0.97
     hostnames:
       - beta-release-db.ntex.com
       - release-db.ntex.com
+      - develop-db-ntex-com
       - frappe11-db-ntex-com
-  - ip: 10.76.0.66
+  - ip: 10.70.0.8
     hostnames:
       - beta-release-elasticsearch.ntex.com
       - release-elasticsearch.ntex.com
+      - develop-elasticsearch.ntex.com
 
   # - ip: 1
   #   hostnames:

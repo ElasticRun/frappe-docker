@@ -2,31 +2,30 @@
 echo "Configuring Bench..."
 cd ${BENCH_HOME}
 # Hack for ensuring that DB_HOST is correctly setup when using it as ExternalName service in Kubernetes
-export NAMESPACE=${TARGET_NAMESPACE:-default}
-echo "Getting service for DB..."
-sudo apk --update add jq
-# Query Kubernetes API and extract service type.
-export TOKEN=`cat /var/run/secrets/kubernetes.io/serviceaccount/token`
-NEW_DB_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("-db-ntex-com$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName' | tr -d '"'`
-if [ ! -z ${NEW_DB_HOST} ]
+# export NAMESPACE=${TARGET_NAMESPACE:-default}
+# echo "Getting service for DB..."
+
+# # Query Kubernetes API and extract service type.
+# export TOKEN=`cat /var/run/secrets/kubernetes.io/serviceaccount/token`
+# NEW_DB_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("-db-ntex-com$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName' | tr -d '"'`
+if [ ! -z ${DB_HOST} ]
 then
-    echo "Updating DB Host to ${NEW_DB_HOST}"
-    export DB_HOST=${NEW_DB_HOST}
+    echo "Updating DB Host to ${DB_HOST}"
+    bench set-mariadb-host ${DB_HOST}
 fi
-bench set-mariadb-host ${DB_HOST}
 
 bench config set-common-config -c root_password ${DB_PASSWORD}
 
-if [ "X${ADMIN_PASSWORD}" != "X" ]
+if [ ! -z ${ADMIN_PASSWORD} ]
 then
     echo "Setting Admin password"
     bench config set-common-config -c admin_password ${ADMIN_PASSWORD}
 fi
 
-# Fix redis ExternalName services.
-CACHE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-cache$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
-QUEUE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-queue$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
-SOCKETIO_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-socketio$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
+# # Fix redis ExternalName services.
+# CACHE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-cache$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
+# QUEUE_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-queue$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
+# SOCKETIO_HOST=`curl -s https://kubernetes.default.svc/api/v1/namespaces/${NAMESPACE}/services --header "Authorization: Bearer $TOKEN" --insecure | jq '.items[] | select(.metadata.name|test("^er-frappe-redis-socketio$")) | select(.spec.type|test("^ExternalName$")) | .spec.externalName + ":" + (.spec.ports[0].targetPort | tostring)' | tr -d '"'`
 
 if [ ! -z ${CACHE_HOST} ]
 then

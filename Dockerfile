@@ -34,7 +34,7 @@ ENV DB_HOST=mariadb
 ENV BENCH_NAME=docker-bench
 
 # OS User Setup
-RUN addgroup -S frappe && adduser -S frappe -G frappe && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN addgroup -g 1001 -S frappe && adduser -u 1001 -S frappe -G frappe && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN pip install ${BENCH_URL}
 
@@ -57,6 +57,9 @@ COPY --chown=frappe:frappe ./postboot_scripts/*.sh /home/frappe/${BENCH_NAME}/po
 COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
 COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
 COPY --chown=frappe:frappe ./migrate.sh /home/frappe/${BENCH_NAME}/migrate.sh
+COPY --chown=frappe:frappe ./checkjobhealth.sh /home/frappe/${BENCH_NAME}/checkjobhealth.sh
+COPY --chown=frappe:frappe ./setenv.sh /home/frappe/${BENCH_NAME}/setenv.sh
+COPY --chown=frappe:frappe ./bench.default.env /home/frappe/${BENCH_NAME}/bench.default.env
 #COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
 COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisord.conf
 COPY --chown=frappe:frappe ./supervisor-docker.conf /home/frappe/${BENCH_NAME}/config/supervisor.conf
@@ -64,6 +67,7 @@ COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config
 COPY --chown=frappe:frappe ./nginx-startup.conf /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
 COPY --chown=frappe:frappe ./site_config_docker.json /home/frappe/${BENCH_NAME}/site_config_docker.json
 RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh \
+  && chmod u+x /home/frappe/${BENCH_NAME}/bench.default.env \
   && chmod u+x /home/frappe/${BENCH_NAME}/boot_scripts/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/postboot_scripts/*.sh \
   && ln -s /home/frappe/${BENCH_NAME}/config/nginx.conf /etc/nginx/conf.d/nginx.conf && mkdir -p /run/nginx \
   && mkdir -p /etc/supervisor.d && mkdir -p /var/run && mkdir -p /var/log/supervisor \
@@ -77,22 +81,7 @@ RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BEN
   && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* \
   && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
 
-ARG CUR_DATE=2019-08-02
-USER frappe
-RUN cd /home/frappe/${BENCH_NAME}/apps \
-  && git clone --verbose --single-branch --depth=1 --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git \
-  && cd /home/frappe/${BENCH_NAME} \
-  && ./env/bin/pip install ./apps/spine
-# RUN cd /home/frappe/${BENCH_NAME} && bench get-app --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
-
-RUN cd /home/frappe/${BENCH_NAME} && bench setup requirements && bench build
-
-# USER root
-# #Using Google's DNS servers
-# RUN echo 'nameserver 8.8.8.8' > /etc/resolv.conf
-# COPY ./dhclient.conf /etc/dhcp/dhclient.conf
-
 #Execute
-USER frappe
+RUN mkdir -p /home/frappe/docker-bench/config/env
 WORKDIR /home/frappe/${BENCH_NAME}
 CMD [ "/bin/sh", "-c", "./entrypoint.sh" ]
