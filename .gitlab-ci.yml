@@ -16,7 +16,6 @@ dev-erfrappe-deploy:
     - pwd
     - ./build-frappe11.sh develop
     - docker push dock.elasticrun.in/er-frappe11-base:develop
-    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}
   only:
     - develop
     - master
@@ -30,7 +29,6 @@ beta-erfrappe-deploy:
     - pwd
     - ./build-frappe11.sh beta-release
     - docker push dock.elasticrun.in/er-frappe11-base:beta-release
-    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}
   only:
     - beta-release
   tags:
