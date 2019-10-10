@@ -81,16 +81,6 @@ RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BEN
   && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* \
   && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
 
-#ARG CUR_DATE=2019-08-02
-# USER frappe
-# RUN cd /home/frappe/${BENCH_NAME}/apps \
-#   && git clone --verbose --single-branch --depth=1 --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git \
-#   && cd /home/frappe/${BENCH_NAME} \
-#   && ./env/bin/pip install ./apps/spine
-# # RUN cd /home/frappe/${BENCH_NAME} && bench get-app --branch release https://gitlab-runner:X1GtY4CHyxvYAmaYkyZU@engg.elasticrun.in/platform-foundation/spine.git
-
-# RUN cd /home/frappe/${BENCH_NAME} && bench setup requirements && bench build
-
 #Execute
 RUN mkdir -p /home/frappe/docker-bench/config/env
 WORKDIR /home/frappe/${BENCH_NAME}
