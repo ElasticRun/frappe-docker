@@ -14,6 +14,6 @@
 #     echo "Creating new disk"
 #     gcloud compute disks create er-bk8s-test-site-pd --size=10GB --zone=asia-south1-b
 # fi
-helm repo add --username repouser --password Ntex@123 er-develop https://helm.elasticrun.in/helm/develop
-helm repo update
-helm upgrade frappe11-test --namespace frappe11 --install -f ./values-test.yaml --set persistence.pdName=er-bk8s-test-site-pd er-develop/er-frappe
+#helm repo add --username repouser --password Ntex@123 er-develop https://helm.elasticrun.in/helm/develop
+#helm repo update
+helm upgrade test-frappe11 --namespace frappe11 --debug --install -f ./values-test.yaml /home/frappe/platform-foundation/helm-charts/er-frappe
