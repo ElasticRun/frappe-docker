@@ -29,8 +29,8 @@ RUN apt-get update && apt-get -y install --no-install-recommends fonts-indic vir
 # Add librdkafka - required for spine that connects to kafka
 RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
 
-RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
-  && dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb && apt --fix-broken install
+RUN wget -O /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
+  && dpkg -i /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb && apt --fix-broken install
 
 # Cleanup.
 RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
