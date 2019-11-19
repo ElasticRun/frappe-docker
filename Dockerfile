@@ -9,7 +9,7 @@ ENV LANG C.UTF-8
 
 # Install all pre-requisites
 # Add Node JS PPA.
-RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common dirmngr curl wget \
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common dirmngr curl sudo wget \
   && curl -sL https://deb.nodesource.com/setup_13.x | bash - \
   && apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8 \
   && add-apt-repository 'deb [arch=amd64] http://mirror.terrahost.no/mariadb/repo/10.3/debian buster main' \
