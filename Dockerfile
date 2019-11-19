@@ -9,7 +9,7 @@ ENV LANG C.UTF-8
 
 # Install all pre-requisites
 # Add Node JS PPA.
-RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common dirmngr curl sudo wget \
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common dirmngr curl sudo wget apt-utils \
   && curl -sL https://deb.nodesource.com/setup_13.x | bash - \
   && apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8 \
   && add-apt-repository 'deb [arch=amd64] http://mirror.terrahost.no/mariadb/repo/10.3/debian buster main' \
@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
   && add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/5.3 stable main" \
   && add-apt-repository "deb [arch=amd64] http://ftp.hk.debian.org/debian buster-backports main"
 
-RUN apt-get update && apt-get -y install fonts-indic virtualenv \
+RUN apt-get update && apt-get -y install --no-install-recommends fonts-indic virtualenv \
   libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
   python-dev lib32z1-dev nodejs supervisor nginx git python-minimal \
   libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
