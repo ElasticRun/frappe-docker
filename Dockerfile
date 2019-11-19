@@ -1,4 +1,5 @@
-FROM python:3.7.3-alpine
+FROM python:3.8.0-slim-buster
+#FROM python:3.7.3-alpine
 #FROM python:2.7.16-alpine as intermediate
 LABEL MAINTAINER=ElasticRun
 
@@ -7,14 +8,41 @@ USER root
 ENV LANG C.UTF-8
 
 # Install all pre-requisites
-RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
-  lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
-  mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
-  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less dhclient \
+# Add Node JS PPA.
+RUN curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+RUN apt-get install -y software-properties-common dirmngr \
+  && sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8 \
+  && sudo add-apt-repository 'deb [arch=amd64] http://mirror.terrahost.no/mariadb/repo/10.3/debian buster main' \
+  && wget -qO - https://packages.confluent.io/deb/5.3/archive.key | sudo apt-key add - \
+  && sudo add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/5.3 stable main"
+
+RUN apt-get update && apt-get -y install fonts-indic virtualenv \
+  libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
+  python-dev lib32z1-dev nodejs supervisor nginx git python-minimal \
+  libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
+  libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev \
+  libgdbm-dev libc6-dev libbz2-dev libffi-dev libfontenc1 xfonts-75dpi xfonts-base xfonts-encodings xfonts-utils openssl \
+  libxrender-dev git-core libx11-dev libxext-dev libfontconfig1-dev libfreetype6-dev fontconfig librdkafka-dev \
   && npm install -g yarn
 
+RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
+  && dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb && apt --fix-broken install
+
+# Cleanup.
+RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/*
+
+
+  # Old list of packages used with alpine image.
+#  mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
+#   lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
+#   mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
+#   python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less dhclient \
+#   && npm install -g yarn
+
+
 # Add librdkafka - required for spine that connects to kafka
-RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
+#RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
 
 ARG GIT_AUTH_USER
 ARG GIT_AUTH_PASSWORD
