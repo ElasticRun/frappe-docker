@@ -27,7 +27,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends fonts-indic vir
   && npm install -g yarn
 
 # Add librdkafka - required for spine that connects to kafka
-RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
+RUN git clone --branch v1.2.2 https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
 
 RUN wget -O /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
   && dpkg -i /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb && apt --fix-broken install
@@ -61,7 +61,7 @@ ENV DB_HOST=mariadb
 ENV BENCH_NAME=docker-bench
 
 # OS User Setup
-RUN addgroup --system --gid 1001 frappe && adduser --system --uid 1001 --group frappe frappe  \
+RUN addgroup --system --gid 1001 frappe && adduser --system --uid 1001 --ingroup frappe frappe  \
   && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN pip install ${BENCH_URL}
