@@ -61,7 +61,8 @@ ENV DB_HOST=mariadb
 ENV BENCH_NAME=docker-bench
 
 # OS User Setup
-RUN addgroup -g 1001 -S frappe && adduser -u 1001 -S frappe -G frappe && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN addgroup --system --gid 1001 frappe && adduser --system --uid 1001 --group frappe frappe  \
+  && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN pip install ${BENCH_URL}
 
