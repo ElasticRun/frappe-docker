@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
 
 RUN apt-get update && apt-get -y install --no-install-recommends fonts-indic virtualenv \
   libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
-  python-dev lib32z1-dev nodejs supervisor nginx git python-minimal \
+  lib32z1-dev nodejs supervisor nginx git \
   libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
   libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev \
   libgdbm-dev libc6-dev libbz2-dev libffi-dev libfontenc1 xfonts-75dpi xfonts-base xfonts-encodings xfonts-utils openssl \
