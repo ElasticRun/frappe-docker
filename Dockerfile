@@ -1,4 +1,4 @@
-FROM python:3.8.0-slim-buster
+FROM python:3.7.5-slim-buster
 #FROM python:3.7.3-alpine
 #FROM python:2.7.16-alpine as intermediate
 LABEL MAINTAINER=ElasticRun
