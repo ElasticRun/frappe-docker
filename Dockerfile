@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
   && add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/5.3 stable main" \
   && add-apt-repository "deb [arch=amd64] http://ftp.hk.debian.org/debian buster-backports main"
 
-RUN apt-get update && apt-get -y install --no-install-recommends fonts-indic virtualenv \
+RUN apt-get update && apt-get -y install --no-install-recommends px fonts-indic virtualenv \
   libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
   lib32z1-dev nodejs supervisor nginx git \
   libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
