@@ -19,7 +19,7 @@ dev-erfrappe-deploy:
     - ./build-frappe11-ubuntu.sh develop
     - docker push dock.elasticrun.in/er-frappe11-base:develop
     #- docker push dock.elasticrun.in/er-frappe11-base:develop-alpine
-    - docker push dock.elasticrun.in/er-frappe11-base:develop-ubuntu
+    - docker push dock.elasticrun.in/er-frappe11-base:develop-xenial
   only:
     - develop
     - master
