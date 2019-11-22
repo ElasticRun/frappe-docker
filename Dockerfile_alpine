@@ -1,0 +1,163 @@
+FROM python:3.7.5-alpine
+#FROM python:2.7.16-alpine as intermediate
+LABEL MAINTAINER=ElasticRun
+
+USER root
+# Generate locale C.UTF-8 for mariadb and general locale dataopenjpeg
+ENV LANG C.UTF-8
+
+# Install all pre-requisites
+RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
+  lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
+  mariadb-common curl nano vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
+  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less dhclient \
+  && npm install -g yarn
+
+# Add librdkafka - required for spine that connects to kafka
+RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
+
+# wkhtmltopdf - patched qt setup
+RUN echo "http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+RUN apk add --update \
+	patch gtk+ openssl glib fonts-base fonts-extra \
+	make g++ glib-dev gtk+-dev mesa-dev openssl-dev
+RUN rm -rf /var/cache/apk/*
+
+# wkhtmltopdf #
+RUN git clone --recursive --branch 0.12.5 https://github.com/wkhtmltopdf/wkhtmltopdf.git /tmp/wkhtmltopdf
+
+COPY conf/qt-musl.patch /tmp/wkhtmltopdf/qt/qt-musl.patch
+COPY conf/qt-musl-iconv-no-bom.patch /tmp/wkhtmltopdf/qt/qt-musl-iconv-no-bom.patch
+COPY conf/qt-recursive-global-mutex.patch /tmp/wkhtmltopdf/qt/qt-recursive-global-mutex.patch
+COPY conf/qt-font-pixel-size.patch /tmp/wkhtmltopdf/qt/qt-font-pixel-size.patch
+
+RUN	cd /tmp/wkhtmltopdf/qt && \
+	patch -p1 -i qt-musl.patch && \
+	patch -p1 -i qt-musl-iconv-no-bom.patch && \
+	patch -p1 -i qt-recursive-global-mutex.patch && \
+	patch -p1 -i qt-font-pixel-size.patch && \
+	sed -i "s|-O2|$CXXFLAGS|" mkspecs/common/g++.conf && \
+	sed -i "/^QMAKE_RPATH/s| -Wl,-rpath,||g" mkspecs/common/g++.conf && \
+	sed -i "/^QMAKE_LFLAGS\s/s|+=|+= $LDFLAGS|g" mkspecs/common/g++.conf && \
+	./configure -confirm-license -opensource \
+		-prefix /usr \
+		-datadir /usr/share/qt \
+		-sysconfdir /etc \
+		-plugindir /usr/lib/qt/plugins \
+		-importdir /usr/lib/qt/imports \
+		-fast \
+		-release \
+		-static \
+		-largefile \
+		-glib \
+		-graphicssystem raster \
+		-qt-zlib \
+		-qt-libpng \
+		-qt-libmng \
+		-qt-libtiff \
+		-qt-libjpeg \
+		-svg \
+		-webkit \
+		-gtkstyle \
+		-xmlpatterns \
+		-script \
+		-scripttools \
+		-openssl-linked \
+		-nomake demos \
+		-nomake docs \
+		-nomake examples \
+		-nomake tools \
+		-nomake tests \
+		-nomake translations \
+		-no-qt3support \
+		-no-pch \
+		-no-icu \
+		-no-phonon \
+		-no-phonon-backend \
+		-no-rpath \
+		-no-separate-debug-info \
+		-no-dbus \
+		-no-opengl \
+		-no-openvg && \
+	make --silent && \
+	make install && \
+	cd /tmp/wkhtmltopdf && \
+	qmake && \
+	make --silent && \
+	make install && \
+	rm -rf /tmp/*
+
+# remove qt build packages #
+RUN apk del --update \
+	make g++ glib-dev gtk+-dev mesa-dev openssl-dev
+RUN rm -rf /var/cache/apk/*
+
+ARG GIT_AUTH_USER
+ARG GIT_AUTH_PASSWORD
+ARG FRAPPE_BRANCH=version-11
+ARG GIT_BENCH_URL=github.com/frappe/bench.git
+ARG GIT_FRAPPE_URL=github.com/frappe/frappe.git
+ARG KAFKA_CONFIG='{}'
+
+ENV KAFKA_CONFIG=${KAFKA_CONFIG}
+ENV BENCH_URL=git+https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_BENCH_URL}@master
+ENV FRAPPE_URL=https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}${GIT_FRAPPE_URL}
+ENV SPINE_URL=https://${GIT_AUTH_USER}${GIT_AUTH_PASSWORD:+:}${GIT_AUTH_PASSWORD}${GIT_AUTH_USER:+@}engg.elasticrun.in/platform-foundation/spine.git
+RUN echo "BENCH_URL = ${BENCH_URL}"
+RUN echo "FRAPPE URL = ${FRAPPE_URL}"
+
+ENV DB_HOST=mariadb
+ENV BENCH_NAME=docker-bench
+
+# OS User Setup
+RUN addgroup -g 1001 -S frappe && adduser -u 1001 -S frappe -G frappe && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+RUN pip install ${BENCH_URL}
+
+# Create bench instance
+USER frappe
+RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} --ignore-exist \
+  --skip-redis-config-generation --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH:-master} \
+  --verbose --frappe-path ${FRAPPE_URL} && cd /home/frappe/${BENCH_NAME}
+
+RUN cd /home/frappe/${BENCH_NAME} && ./env/bin/pip install gevent watchgod
+
+RUN mkdir -p /home/frappe/${BENCH_NAME}/entrypoints && chown -R frappe:frappe /home/frappe/${BENCH_NAME}/config
+#RUN mv /home/frappe/${BENCH_NAME}/sites /home/frappe/sites-backup && mkdir -p /home/frappe/${BENCH_NAME}/entrypoints
+
+USER root
+COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/docker-bench/common_site_config_docker.json
+COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
+COPY --chown=frappe:frappe ./boot_scripts/*.sh /home/frappe/${BENCH_NAME}/boot_scripts/
+COPY --chown=frappe:frappe ./postboot_scripts/*.sh /home/frappe/${BENCH_NAME}/postboot_scripts/
+COPY --chown=frappe:frappe ./entrypoint.sh /home/frappe/${BENCH_NAME}/entrypoint.sh
+COPY --chown=frappe:frappe ./run.sh /home/frappe/${BENCH_NAME}/run.sh
+COPY --chown=frappe:frappe ./migrate.sh /home/frappe/${BENCH_NAME}/migrate.sh
+COPY --chown=frappe:frappe ./checkjobhealth.sh /home/frappe/${BENCH_NAME}/checkjobhealth.sh
+COPY --chown=frappe:frappe ./setenv.sh /home/frappe/${BENCH_NAME}/setenv.sh
+COPY --chown=frappe:frappe ./bench.default.env /home/frappe/${BENCH_NAME}/bench.default.env
+#COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
+COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisord.conf
+COPY --chown=frappe:frappe ./supervisor-docker.conf /home/frappe/${BENCH_NAME}/config/supervisor.conf
+COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config/nginx.conf
+COPY --chown=frappe:frappe ./nginx-startup.conf /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
+COPY --chown=frappe:frappe ./site_config_docker.json /home/frappe/${BENCH_NAME}/site_config_docker.json
+RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/*.sh \
+  && chmod u+x /home/frappe/${BENCH_NAME}/bench.default.env \
+  && chmod u+x /home/frappe/${BENCH_NAME}/boot_scripts/*.sh && chmod u+x /home/frappe/${BENCH_NAME}/postboot_scripts/*.sh \
+  && ln -s /home/frappe/${BENCH_NAME}/config/nginx.conf /etc/nginx/conf.d/nginx.conf && mkdir -p /run/nginx \
+  && mkdir -p /etc/supervisor.d && mkdir -p /var/run && mkdir -p /var/log/supervisor \
+  && ln -s /home/frappe/${BENCH_NAME}/config/supervisor.conf /etc/supervisor.d/frappe.conf
+
+ONBUILD COPY --chown=frappe:frappe ./entrypoints/*.sh /home/frappe/${BENCH_NAME}/entrypoints/
+ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh
+
+# Cleanup
+RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
+  && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* \
+  && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
+
+#Execute
+RUN mkdir -p /home/frappe/docker-bench/config/env
+WORKDIR /home/frappe/${BENCH_NAME}
+CMD [ "/bin/sh", "-c", "./entrypoint.sh" ]
