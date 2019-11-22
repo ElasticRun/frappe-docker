@@ -18,21 +18,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
   && add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/5.3 stable main" \
   && add-apt-repository "deb [arch=amd64] http://ftp.hk.debian.org/ubuntu xenial main"
 
-RUN apt-get update && apt-get -y install --no-install-recommends python3.7 python-pip virtualenv libpq-dev \
-  libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
-  lib32z1-dev nodejs supervisor nginx git mariadb-client  px fonts-indic \
-  libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
-  libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev \
-  libgdbm-dev libc6-dev libbz2-dev libffi-dev libfontenc1 xfonts-75dpi xfonts-base xfonts-encodings xfonts-utils openssl \
-  libxrender-dev git-core libx11-dev libxext-dev libfontconfig1-dev libfreetype6-dev fontconfig \
-  && pip install setuptools pip --upgrade --force-reinstall \
+RUN apt-get update && apt-get -y install --no-install-recommends libssl-dev fonts-indic libssl-dev virtualenv \
+    libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 python-dev lib32z1-dev nodejs \
+    supervisor nginx git libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
+    libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev \
+  && wget -O /tmp/Python-3.7.5.tgz https://www.python.org/ftp/python/3.7.5/Python-3.7.5.tgz \
+  && cd /tmp && tar xzf Python-3.7.5.tgz && cd Python-3.7.5 \
+  && ./configure --enable-optimizations && sudo make altinstall \
   && npm install -g yarn
+RUN pip3.7 install setuptools pip --upgrade --force-reinstall \
+  && ln -s `which python3.7` /usr/local/bin/python
 
 # Add librdkafka - required for spine that connects to kafka
 RUN git clone --branch v1.2.2 https://github.com/edenhill/librdkafka.git && cd librdkafka \
   && ./configure --prefix /usr && make && make install
 
-RUN wget -O /tmp/wkhtmltox_0.12.5-1.xenial_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.xenial_amd64.deb \
+RUN apt-get install -y --no-install-recommends fontconfig xfonts-75dpi xfonts-base \
+  && wget -O /tmp/wkhtmltox_0.12.5-1.xenial_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.xenial_amd64.deb \
   && dpkg -i /tmp/wkhtmltox_0.12.5-1.xenial_amd64.deb && apt --fix-broken install && rm -f /tmp/wkhtmltox_0.12.5-1.xenial_amd64.deb
 
 # RUN mkdir -p /usr/src && cd /usr/src \
