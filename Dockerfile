@@ -31,7 +31,7 @@ RUN git clone --branch v1.2.2 https://github.com/edenhill/librdkafka.git && cd l
   && ./configure --prefix /usr && make && make install
 
 RUN wget -O /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
-  && dpkg -i /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb && apt --fix-broken install
+  && dpkg -i /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb && apt --fix-broken install && rm -f /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb
 
 # RUN mkdir -p /usr/src && cd /usr/src \
 #   && wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz \
