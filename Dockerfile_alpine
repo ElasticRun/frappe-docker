@@ -85,5 +85,6 @@ RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BEN
 
 #Execute
 RUN mkdir -p /home/frappe/docker-bench/config/env
+USER frappe
 WORKDIR /home/frappe/${BENCH_NAME}
 CMD [ "/bin/sh", "-c", "./entrypoint.sh" ]
