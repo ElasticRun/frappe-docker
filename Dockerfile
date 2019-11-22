@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
 
 RUN apt-get update && apt-get -y install --no-install-recommends px fonts-indic virtualenv \
   libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
-  lib32z1-dev nodejs supervisor nginx git \
+  lib32z1-dev nodejs supervisor nginx git mariadb-client \
   libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
   libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev \
   libgdbm-dev libc6-dev libbz2-dev libffi-dev libfontenc1 xfonts-75dpi xfonts-base xfonts-encodings xfonts-utils openssl \
@@ -27,10 +27,16 @@ RUN apt-get update && apt-get -y install --no-install-recommends px fonts-indic 
   && npm install -g yarn
 
 # Add librdkafka - required for spine that connects to kafka
-RUN git clone --branch v1.2.2 https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
+RUN git clone --branch v1.2.2 https://github.com/edenhill/librdkafka.git && cd librdkafka \
+  && ./configure --prefix /usr && make && make install
 
-RUN wget -O /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
-  && dpkg -i /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb && apt --fix-broken install
+# RUN wget -O /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
+#   && dpkg -i /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb && apt --fix-broken install
+
+RUN mkdir -p /usr/src && cd /usr/src \
+  && wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz \
+  && tar -xf wkhtmltox-0.12.3_linux-generic-amd64.tar.xz \
+  && cd /usr/bin && sudo ln -s /usr/src/wkhtmltox/bin/wkhtmltopdf
 
 # Cleanup.
 RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \

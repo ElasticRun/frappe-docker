@@ -1,4 +1,4 @@
-FROM python:3.7.5-alpine
+FROM python:3.7.5-alpine as py-base
 #FROM python:2.7.16-alpine as intermediate
 LABEL MAINTAINER=ElasticRun
 
@@ -11,16 +11,14 @@ RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-d
   lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
   mariadb-common curl nano vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
   python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less dhclient \
-  && npm install -g yarn
+  patch gtk+ openssl glib  make g++ glib-dev gtk+-dev mesa-dev openssl-dev wkhtmltopdf \
+  && npm install -g yarn && rm -rf /var/cache/apk/*
 
 # Add librdkafka - required for spine that connects to kafka
 RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
 
 # wkhtmltopdf - patched qt setup
 RUN echo "http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
-RUN apk add --update \
-	patch gtk+ openssl glib  make g++ glib-dev gtk+-dev mesa-dev openssl-dev
-RUN rm -rf /var/cache/apk/*
 
 # wkhtmltopdf #
 RUN git clone --recursive --branch 0.12.5 https://github.com/wkhtmltopdf/wkhtmltopdf.git /tmp/wkhtmltopdf
@@ -87,9 +85,8 @@ RUN	cd /tmp/wkhtmltopdf/qt && \
 	rm -rf /tmp/*
 
 # remove qt build packages #
-RUN apk del --update \
-	make g++ glib-dev gtk+-dev mesa-dev openssl-dev
-RUN rm -rf /var/cache/apk/*
+RUN apk del --update make g++ glib-dev gtk+-dev mesa-dev openssl-dev \
+    && rm -rf /var/cache/apk/*
 
 ARG GIT_AUTH_USER
 ARG GIT_AUTH_PASSWORD
@@ -135,7 +132,7 @@ COPY --chown=frappe:frappe ./migrate.sh /home/frappe/${BENCH_NAME}/migrate.sh
 COPY --chown=frappe:frappe ./checkjobhealth.sh /home/frappe/${BENCH_NAME}/checkjobhealth.sh
 COPY --chown=frappe:frappe ./setenv.sh /home/frappe/${BENCH_NAME}/setenv.sh
 COPY --chown=frappe:frappe ./bench.default.env /home/frappe/${BENCH_NAME}/bench.default.env
-#COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
+
 COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisord.conf
 COPY --chown=frappe:frappe ./supervisor-docker.conf /home/frappe/${BENCH_NAME}/config/supervisor.conf
 COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config/nginx.conf
@@ -153,7 +150,7 @@ ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /ho
 
 # Cleanup
 RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
-  && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* \
+  && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* && rm -rf /var/cache/apk/* \
   && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
 
 #Execute
