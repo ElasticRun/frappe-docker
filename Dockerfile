@@ -30,13 +30,13 @@ RUN apt-get update && apt-get -y install --no-install-recommends px fonts-indic 
 RUN git clone --branch v1.2.2 https://github.com/edenhill/librdkafka.git && cd librdkafka \
   && ./configure --prefix /usr && make && make install
 
-# RUN wget -O /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
-#   && dpkg -i /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb && apt --fix-broken install
+RUN wget -O /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
+  && dpkg -i /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb && apt --fix-broken install
 
-RUN mkdir -p /usr/src && cd /usr/src \
-  && wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz \
-  && tar -xf wkhtmltox-0.12.3_linux-generic-amd64.tar.xz \
-  && cd /usr/bin && sudo ln -s /usr/src/wkhtmltox/bin/wkhtmltopdf
+# RUN mkdir -p /usr/src && cd /usr/src \
+#   && wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz \
+#   && tar -xf wkhtmltox-0.12.3_linux-generic-amd64.tar.xz \
+#   && cd /usr/bin && sudo ln -s /usr/src/wkhtmltox/bin/wkhtmltopdf
 
 # Cleanup.
 RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \

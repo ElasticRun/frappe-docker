@@ -15,7 +15,8 @@ RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-d
   && npm install -g yarn && rm -rf /var/cache/apk/*
 
 # Add librdkafka - required for spine that connects to kafka
-RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr && make && make install
+RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr \
+    && make && make install
 
 # wkhtmltopdf - patched qt setup
 RUN echo "http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
