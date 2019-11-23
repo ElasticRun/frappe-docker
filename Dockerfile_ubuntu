@@ -24,7 +24,9 @@ RUN apt-get update && apt-get -y install --no-install-recommends libssl-dev font
     supervisor nginx git libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
     libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev python3.7-dev
     
-RUN pip3.7 install setuptools pip --upgrade --force-reinstall \
+# RUN pip3.7 install setuptools pip --upgrade --force-reinstall \
+#  && ln -s `which python3.7` /usr/local/bin/python
+RUN wget -O - https://bootstrap.pypa.io/get-pip.py | python3.7 \
   && ln -s `which python3.7` /usr/local/bin/python
 
 # Add librdkafka - required for spine that connects to kafka
