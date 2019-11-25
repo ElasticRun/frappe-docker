@@ -17,8 +17,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
   && add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/5.3 stable main" \
   && add-apt-repository "deb [arch=amd64] http://ftp.hk.debian.org/debian buster-backports main" \
   && add-apt-repository "deb http://nginx.org/packages/ubuntu/ xenial nginx" \
-  && curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add - \
-  && add-apt-repository ppa:deadsnakes/ppa
+  && curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+  #\
+  #&& add-apt-repository ppa:deadsnakes/ppa
 
 RUN apt-get update && apt-get -y install --no-install-recommends px fonts-indic virtualenv \
   libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
