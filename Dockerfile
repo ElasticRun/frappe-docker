@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
   && curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
   #\
   #&& add-apt-repository ppa:deadsnakes/ppa
+RUN wget -O /tmp/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb http://security-cdn.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb \
+  && dpkg -i /tmp/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb && rm -f /tmp/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb \
+  && apt-mark auto libssl1.0.0
 
 RUN apt-get update && apt-get -y install --no-install-recommends px fonts-indic virtualenv \
   libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
