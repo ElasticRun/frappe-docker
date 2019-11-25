@@ -15,14 +15,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
   && add-apt-repository 'deb [arch=amd64] http://mirror.terrahost.no/mariadb/repo/10.3/debian buster main' \
   && wget -qO - https://packages.confluent.io/deb/5.3/archive.key | sudo apt-key add - \
   && add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/5.3 stable main" \
-  && add-apt-repository "deb [arch=amd64] http://ftp.hk.debian.org/debian buster-backports main"
+  && add-apt-repository "deb [arch=amd64] http://ftp.hk.debian.org/debian buster-backports main" \
+  && add-apt-repository "deb http://nginx.org/packages/ubuntu/ xenial nginx" \
+  && curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
 
 RUN apt-get update && apt-get -y install --no-install-recommends px fonts-indic virtualenv \
   libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
-  lib32z1-dev nodejs supervisor nginx git mariadb-client \
-  libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
-  libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev \
-  libgdbm-dev libc6-dev libbz2-dev libffi-dev libfontenc1 xfonts-75dpi xfonts-base xfonts-encodings xfonts-utils openssl \
+  lib32z1-dev nodejs supervisor nginx git mariadb-client libblas3 liblapack3 liblapack-dev \
+  libblas-dev gfortran build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev \
+  libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev libfontenc1 \
+  xfonts-75dpi xfonts-base xfonts-encodings xfonts-utils openssl \
   libxrender-dev git-core libx11-dev libxext-dev libfontconfig1-dev libfreetype6-dev fontconfig \
   && npm install -g yarn
 
