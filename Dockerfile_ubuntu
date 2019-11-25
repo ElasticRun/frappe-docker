@@ -17,12 +17,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
   && wget -qO - https://packages.confluent.io/deb/5.3/archive.key | sudo apt-key add - \
   && add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/5.3 stable main" \
   && add-apt-repository "deb [arch=amd64] http://ftp.hk.debian.org/ubuntu xenial main" \
-  && add-apt-repository ppa:deadsnakes/ppa
+  && add-apt-repository "deb http://nginx.org/packages/ubuntu/ xenial nginx" \
+  && curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+  #\
+  #&& add-apt-repository ppa:deadsnakes/ppa
 
 RUN apt-get update && apt-get -y install --no-install-recommends libssl-dev fonts-indic libssl-dev virtualenv \
     libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 python-dev lib32z1-dev nodejs \
     supervisor nginx git libblas3 liblapack3 liblapack-dev libblas-dev gfortran build-essential checkinstall \
-    libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev python3.7-dev \
+    libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev \
+    python3.7-dev \
   && wget -O /tmp/Python-3.7.5.tgz https://www.python.org/ftp/python/3.7.5/Python-3.7.5.tgz \
   && cd /tmp && tar xzf Python-3.7.5.tgz && cd Python-3.7.5 \
   && ./configure --enable-optimizations && sudo make altinstall \
@@ -75,7 +79,7 @@ RUN pip install ${BENCH_URL}
 USER frappe
 RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} --ignore-exist \
   --skip-redis-config-generation --no-procfile --no-backups --no-auto-update --frappe-branch ${FRAPPE_BRANCH:-master} \
-  --verbose --frappe-path ${FRAPPE_URL} --python python3.7 && cd /home/frappe/${BENCH_NAME}
+  --verbose --frappe-path ${FRAPPE_URL} --python /usr/local/bin/python && cd /home/frappe/${BENCH_NAME}
 
 RUN cd /home/frappe/${BENCH_NAME} && ./env/bin/pip install gevent watchgod
 
