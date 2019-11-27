@@ -54,7 +54,7 @@ prod-erfrappe-deploy:
     - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-deb
     #- docker push dock.elasticrun.in/er-frappe11-base:release-alpine
     #- docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-alpine
-    - docker push dock.elasticrun.in/er-frappe11-base:release-ubuntu
+    - docker push dock.elasticrun.in/er-frappe11-base:release-xenial
     - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-xenial
   only:
     - release
