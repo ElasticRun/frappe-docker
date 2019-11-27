@@ -15,7 +15,11 @@ dev-erfrappe-deploy:
   script:
     - pwd
     - ./build-frappe11.sh develop
-    - docker push dock.elasticrun.in/er-frappe11-base:develop
+    #- ./build-frappe11-alpine.sh develop
+    - ./build-frappe11-ubuntu.sh develop
+    - docker push dock.elasticrun.in/er-frappe11-base:develop-deb
+    #- docker push dock.elasticrun.in/er-frappe11-base:develop-alpine
+    - docker push dock.elasticrun.in/er-frappe11-base:develop-xenial
   only:
     - develop
     - master
@@ -28,7 +32,11 @@ beta-erfrappe-deploy:
   script:
     - pwd
     - ./build-frappe11.sh beta-release
-    - docker push dock.elasticrun.in/er-frappe11-base:beta-release
+    #- ./build-frappe11-alpine.sh beta-release
+    - ./build-frappe11-ubuntu.sh beta-release
+    - docker push dock.elasticrun.in/er-frappe11-base:beta-release-deb
+    #- docker push dock.elasticrun.in/er-frappe11-base:beta-release-alpine
+    - docker push dock.elasticrun.in/er-frappe11-base:beta-release-ubuntu
   only:
     - beta-release
   tags:
@@ -40,8 +48,14 @@ prod-erfrappe-deploy:
   script:
     - pwd
     - ./build-frappe11.sh release
-    - docker push dock.elasticrun.in/er-frappe11-base:release
-    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}
+    #- ./build-frappe11-alpine.sh release
+    - ./build-frappe11-ubuntu.sh release
+    - docker push dock.elasticrun.in/er-frappe11-base:release-deb
+    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-deb
+    #- docker push dock.elasticrun.in/er-frappe11-base:release-alpine
+    #- docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-alpine
+    - docker push dock.elasticrun.in/er-frappe11-base:release-ubuntu
+    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-ubuntu
   only:
     - release
     - prod

@@ -6,5 +6,5 @@ FRAPPE_BRANCH=v11.1.59
 echo "Kafka Config : '${KAFKA_CONFIG}'"
 docker build --build-arg CUR_DATE=$(date +%Y-%m-%d:%H:%M:%S) --build-arg KAFKA_CONFIG='${KAFKA_CONFIG}' \
   --build-arg GIT_FRAPPE_URL=github.com/frappe/frappe.git --build-arg FRAPPE_BRANCH=${FRAPPE_BRANCH} --build-arg GIT_BENCH_URL=github.com/frappe/bench.git \
-  -t dock.elasticrun.in/er-frappe11-base:${TAG}-deb .
-docker tag dock.elasticrun.in/er-frappe11-base:${TAG}-deb dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-deb
+  -t dock.elasticrun.in/er-frappe11-base:${TAG}-alpine -f Dockerfile_alpine .
+docker tag dock.elasticrun.in/er-frappe11-base:${TAG}-alpine dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-alpine

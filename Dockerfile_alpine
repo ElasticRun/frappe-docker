@@ -1,5 +1,4 @@
-FROM python:3.7.5-slim-buster
-#FROM python:3.7.3-alpine
+FROM python:3.7.5-alpine as py-base
 #FROM python:2.7.16-alpine as intermediate
 LABEL MAINTAINER=ElasticRun
 
@@ -8,53 +7,16 @@ USER root
 ENV LANG C.UTF-8
 
 # Install all pre-requisites
-# Add Node JS PPA.
-RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common dirmngr curl sudo wget apt-utils multiarch-support \
-  && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
-  && apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8 \
-  && add-apt-repository 'deb [arch=amd64] http://mirror.terrahost.no/mariadb/repo/10.3/debian buster main' \
-  && wget -qO - https://packages.confluent.io/deb/5.3/archive.key | sudo apt-key add - \
-  && add-apt-repository "deb [arch=amd64] https://packages.confluent.io/deb/5.3 stable main" \
-  && add-apt-repository "deb [arch=amd64] http://ftp.hk.debian.org/debian buster-backports main" \
-  && add-apt-repository "deb https://nginx.org/packages/mainline/debian/ buster nginx" \
-  && curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
-  #\
-  #&& add-apt-repository ppa:deadsnakes/ppa
-# RUN wget -O /tmp/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb http://security-cdn.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb \
-#   && dpkg -i /tmp/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb && rm -f /tmp/libssl1.0.0_1.0.1t-1+deb8u12_amd64.deb \
-#   && apt-mark auto libssl1.0.0
-
-RUN apt-get update && apt-get -y install --no-install-recommends px fonts-indic virtualenv \
-  libjpeg-dev zlib1g-dev libxml2-dev libxslt-dev libfontconfig1 libxrender1 \
-  lib32z1-dev nodejs supervisor nginx git mariadb-client libblas3 liblapack3 liblapack-dev \
-  libblas-dev gfortran build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev \
-  libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev libfontenc1 \
-  xfonts-75dpi xfonts-base xfonts-encodings xfonts-utils openssl python3.7-dev \
-  libxrender-dev git-core libx11-dev libxext-dev libfontconfig1-dev libfreetype6-dev fontconfig \
-  && npm install -g yarn
+RUN apk add --update mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
+  lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
+  mariadb-common curl nano vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
+  python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less dhclient \
+  patch gtk+ openssl glib  make g++ glib-dev gtk+-dev mesa-dev openssl-dev wkhtmltopdf \
+  && npm install -g yarn && rm -rf /var/cache/apk/*
 
 # Add librdkafka - required for spine that connects to kafka
-RUN git clone --branch v1.2.2 https://github.com/edenhill/librdkafka.git && cd librdkafka \
-  && ./configure --prefix /usr && make && make install
-
-RUN wget -O /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
-  && dpkg -i /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb && apt --fix-broken install && rm -f /tmp/wkhtmltox_0.12.5-1.buster_amd64.deb
-
-# RUN mkdir -p /usr/src && cd /usr/src \
-#   && wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz \
-#   && tar -xf wkhtmltox-0.12.3_linux-generic-amd64.tar.xz \
-#   && cd /usr/bin && sudo ln -s /usr/src/wkhtmltox/bin/wkhtmltopdf
-
-# Cleanup.
-RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/*
-
-  # Old list of packages used with alpine image.
-#  mariadb-dev build-base gcc libxml2-dev libxslt-dev libffi-dev jpeg-dev zlib-dev freetype-dev \
-#   lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libwebp-dev mariadb-connector-c-dev redis libldap git wget mysql-client \
-#   mariadb-common curl nano wkhtmltopdf vim sudo nodejs npm jpeg libxml2 freetype openjpeg tiff busybox-suid gfortran \
-#   python-dev openblas lapack-dev cython coreutils ca-certificates git bash nginx jq supervisor less dhclient \
-#   && npm install -g yarn
+RUN git clone https://github.com/edenhill/librdkafka.git && cd librdkafka && ./configure --prefix /usr \
+    && make && make install
 
 ARG GIT_AUTH_USER
 ARG GIT_AUTH_PASSWORD
@@ -74,8 +36,7 @@ ENV DB_HOST=mariadb
 ENV BENCH_NAME=docker-bench
 
 # OS User Setup
-RUN addgroup --system --gid 1001 frappe && adduser --system --uid 1001 --ingroup frappe frappe  \
-  && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN addgroup -g 1001 -S frappe && adduser -u 1001 -S frappe -G frappe && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN pip install ${BENCH_URL}
 
@@ -101,7 +62,7 @@ COPY --chown=frappe:frappe ./migrate.sh /home/frappe/${BENCH_NAME}/migrate.sh
 COPY --chown=frappe:frappe ./checkjobhealth.sh /home/frappe/${BENCH_NAME}/checkjobhealth.sh
 COPY --chown=frappe:frappe ./setenv.sh /home/frappe/${BENCH_NAME}/setenv.sh
 COPY --chown=frappe:frappe ./bench.default.env /home/frappe/${BENCH_NAME}/bench.default.env
-#COPY --chown=frappe:frappe ./Procfile_docker /home/frappe/${BENCH_NAME}/Procfile
+
 COPY --chown=frappe:frappe ./supervisord.conf /etc/supervisord.conf
 COPY --chown=frappe:frappe ./supervisor-docker.conf /home/frappe/${BENCH_NAME}/config/supervisor.conf
 COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config/nginx.conf
@@ -119,12 +80,11 @@ ONBUILD RUN sudo chmod u+x /home/frappe/${BENCH_NAME}/*.sh && sudo chmod u+x /ho
 
 # Cleanup
 RUN rm -r /root/.cache && rm -r /home/frappe/.cache && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
-  && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* \
+  && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* && rm -rf /var/cache/apk/* \
   && npm cache clean --force && rm -rf /tmp/pip-install* && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
 
 #Execute
 RUN mkdir -p /home/frappe/docker-bench/config/env
-
 USER frappe
 WORKDIR /home/frappe/${BENCH_NAME}
 CMD [ "/bin/sh", "-c", "./entrypoint.sh" ]
