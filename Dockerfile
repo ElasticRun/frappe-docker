@@ -29,7 +29,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends px fonts-indic 
   lib32z1-dev nodejs supervisor nginx git mariadb-client libblas3 liblapack3 liblapack-dev \
   libblas-dev gfortran build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev \
   libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev libfontenc1 \
-  xfonts-75dpi xfonts-base xfonts-encodings xfonts-utils openssl python3.7-dev \
+  xfonts-75dpi xfonts-base xfonts-encodings xfonts-utils openssl python3.7-dev lzma-dev \
   libxrender-dev git-core libx11-dev libxext-dev libfontconfig1-dev libfreetype6-dev fontconfig \
   && npm install -g yarn
 
