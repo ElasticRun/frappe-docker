@@ -36,7 +36,7 @@ beta-erfrappe-deploy:
     - ./build-frappe11-ubuntu.sh beta-release
     - docker push dock.elasticrun.in/er-frappe11-base:beta-release-deb
     #- docker push dock.elasticrun.in/er-frappe11-base:beta-release-alpine
-    - docker push dock.elasticrun.in/er-frappe11-base:beta-release-ubuntu
+    - docker push dock.elasticrun.in/er-frappe11-base:beta-release-xenial
   only:
     - beta-release
   tags:
@@ -54,8 +54,8 @@ prod-erfrappe-deploy:
     - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-deb
     #- docker push dock.elasticrun.in/er-frappe11-base:release-alpine
     #- docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-alpine
-    - docker push dock.elasticrun.in/er-frappe11-base:release-ubuntu
-    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-ubuntu
+    - docker push dock.elasticrun.in/er-frappe11-base:release-xenial
+    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-xenial
   only:
     - release
     - prod
