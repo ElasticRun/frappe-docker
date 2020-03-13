@@ -18,7 +18,7 @@ then
         export VAL=$app
         echo "Exported VAL=$VAL. Adding to apps.txt"
         echo "$app" >> ${BENCH_HOME}/sites/apps.txt
-        AWK_RESULT=$(awk -e 'BEGIN {
+        AWK_RESULT=$(awk 'BEGIN {
             liststr = ENVIRON["INSTALLED_APPS"]
             val = ENVIRON["VAL"]
             #print "val = ", val
