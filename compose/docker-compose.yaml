@@ -1,9 +1,9 @@
 version: '2'
 services:
   mariadb:
-    image: mariadb
+    image: mariadb:10.3
     environment:
-      - MYSQL_ROOT_PASSWORD=123
+      - MYSQL_ROOT_PASSWORD=ntex@123
       - MYSQL_USER=root
     volumes:
       - ./conf/mariadb-conf.d:/etc/mysql/conf.d:ro
@@ -12,54 +12,50 @@ services:
       mysql
     ports:
       - "3307:3306" #mariadb-port
-    container_name: mariadb
+    container_name: frappe11-local-db-ntex-com
 #  volumes:
 #    mariadb_data:
 #      external: true
 
   redis-cache:
     image: redis:alpine
-
     volumes:
       - ./redis-conf:/etc/conf.d
-
     command: ["redis-server","/etc/conf.d/redis_cache.conf"]
-
     container_name: redis-cache
 
   redis-queue:
     image: redis:alpine
-
     volumes:
       - ./redis-conf:/etc/conf.d
-
     command: ["redis-server","/etc/conf.d/redis_queue.conf"]
-
     container_name: redis-queue
 
   redis-socketio:
     image: redis:alpine
-
     volumes:
       - ./redis-conf:/etc/conf.d
-
     command: ["redis-server","/etc/conf.d/redis_socketio.conf"]
-
     container_name: redis-socketio
 
-
   frappe:
-    image: dock.elasticrun.in/er-frappe:0.1-dev
+    image: dock.elasticrun.in/er-frappe11-base:develop-xenial
     volumes:
-      - ./redis-conf/redis_cache.conf:/home/frappe/frappe-bench/config/redis_cache.conf
-      - ./redis-conf/redis_queue.conf:/home/frappe/frappe-bench/config/redis_queue.conf
-      - ./redis-conf/redis_socketio.conf:/home/frappe/frappe-bench/config/redis_socketio.conf
-      - ./sites:/home/frappe/docker-bench/sites
-    build: .
+      - ./env:/home/frappe/docker-bench/config/env
+      - ./logs:/home/frappe/docker-bench/logs
+      - ./sites/site1.docker:/home/frappe/docker-bench/sites/site1.docker
+      - ./currentsite.txt:/home/frappe/docker-bench/sites/currentsite.txt
+      - ./apps.txt:/home/frappe/docker-bench/sites/apps.txt
+      - ./common_site_config.json:/home/frappe/docker-bench/sites/common_site_config.json
+    environment: 
+      - GUNI_WORKER_CONNECTIONS=10
+      - GUNI_WORKERS=1
+      - DB_NAME=frappe11db
+      - DB_PASSWORD=ntex@123
+      - ADMIN_PASSWORD=password
+      - RELEASE_NAME=frappe11-local
     ports:
-      - "8010:8000" #webserver_port
-      - "9010:9000" #socketio_port
-      - "6797:6787" #file_watcher_port
+      - "8888:8000" #webserver_port
     stdin_open: true
     tty: true
     links:
