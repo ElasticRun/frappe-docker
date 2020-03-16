@@ -76,12 +76,28 @@ then
     echo "Stopping startup nginx. Will be replaced with actual NGinx"
     sudo nginx -s quit
   fi
+  # If there are no inputs (i.e. start all processes), check if spine processes can be started.
+  if [ $# -eq 0 ]
+  then
+    bench list-apps | grep -q 'spine'
+    SPINE_EXISTS=$?
+    if [ $SPINE_EXISTS -ne 0 ]
+    then
+      ARGS="docker-bench-web:* default-workers:* scheduler:* long-worker:*"
+    fi
+  fi
   echo "Environment Variables - "
   env
   echo "Starting supervisor"
   sudo -E supervisord --configuration /etc/supervisord.conf
-  echo "Starting bench process... Arguments - $@"
-  ./run.sh $@
+  if [ "X${ARGS}" != "X" ]
+  then
+    echo "Starting bench process... Arguments - $ARGS"
+    ./run.sh ${ARGS}
+  else
+    echo "Starting bench process... Arguments - $@"
+    ./run.sh $@
+  fi
 else
   echo "Setup of container failed. Please check logs, correct the error and retry."
   exit 1

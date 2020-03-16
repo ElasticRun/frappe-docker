@@ -26,7 +26,7 @@ then
             #print "APP_ARR = ", APP_ARR[1], " length = ", arrlen
             retval = 1
             i = 1
-            while ( and(i <= arrlen, retval == 1) ) {  if (APP_ARR[i]==val) {retval = 0}; i += 1 }
+            while ( i <= arrlen && retval == 1 ) {  if (APP_ARR[i]==val) {retval = 0}; i += 1 }
             #print "retval - ", retval
             print retval
         }')
