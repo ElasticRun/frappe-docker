@@ -1,4 +1,5 @@
 #!/bin/bash
+#. ./error.sh && error "true"
 echo "Starting pod for frappe application"
 . ./setenv.sh
 
@@ -11,6 +12,9 @@ then
   # This check depends on content of supervisor.conf file
   echo $ARG1 | grep -F -q 'docker-bench-web:*'
   IS_WEB=$?
+else
+  # If no arguments - web is included.
+  IS_WEB=0
 fi
 
 if [ $IS_WEB -eq 0 ]
@@ -68,6 +72,7 @@ then
     echo "One of the boot scripts failed. Exiting container"
     exit 1
 fi
+ARGS=""
 # Irrespective of site setup as part of startup, bench is always started.
 if [ $SUCCESS -eq 0 ]
 then
@@ -77,20 +82,22 @@ then
     sudo nginx -s quit
   fi
   # If there are no inputs (i.e. start all processes), check if spine processes can be started.
-  if [ $# -eq 0 ]
-  then
-    bench list-apps | grep -q 'spine'
-    SPINE_EXISTS=$?
-    if [ $SPINE_EXISTS -ne 0 ]
-    then
-      ARGS="docker-bench-web:* default-workers:* scheduler:* long-worker:*"
-    fi
-  fi
+  # if [ $# -eq 0 ]
+  # then
+  #   echo "Checking if spine is installed"
+  #   SPINE_EXISTS=`ls /home/frappe/docker-bench/apps | grep -w 'spine'`
+  #   echo "Spine Exists ? - ${SPINE_EXISTS}"
+  #   if [ "X${SPINE_EXISTS}" == "X" ]
+  #   then
+  #     echo "Setting non-spine args to ${NONSPINE_ARGS}"
+  #     ARGS=${NONSPINE_ARGS}
+  #   fi
+  # fi
   echo "Environment Variables - "
   env
   echo "Starting supervisor"
   sudo -E supervisord --configuration /etc/supervisord.conf
-  if [ "X${ARGS}" != "X" ]
+  if [ ! -z ${ARGS} -a "X${ARGS:-}" != "X" ]
   then
     echo "Starting bench process... Arguments - $ARGS"
     ./run.sh ${ARGS}

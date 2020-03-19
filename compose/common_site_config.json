@@ -7,6 +7,7 @@
  "frappe_user": "frappe",
  "gunicorn_workers": 4,
  "rebase_on_pull": false,
+ "redis_big_cache": "redis://redis-bigcache:13100",
  "redis_cache": "redis://redis-cache:13000",
  "redis_queue": "redis://redis-queue:11000",
  "redis_socketio": "redis://redis-socketio:12000",

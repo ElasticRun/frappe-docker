@@ -1,5 +1,6 @@
 #!/bin/sh
 echo "Configuring Bench..."
+cp /home/frappe/docker-bench/sites/common_site_config.json /home/frappe/docker-bench/sites/common_site_config.json.orig
 cd ${BENCH_HOME}
 # Hack for ensuring that DB_HOST is correctly setup when using it as ExternalName service in Kubernetes
 # export NAMESPACE=${TARGET_NAMESPACE:-default}
@@ -31,6 +32,15 @@ if [ ! -z ${CACHE_HOST} ]
 then
     echo "Updating redis cache host to ${CACHE_HOST}"
     bench set-redis-cache-host "${CACHE_HOST}"
+fi
+
+if [ ! -z ${BIGCACHE_HOST} ]
+then
+    echo "Updating redis big cache host to ${BIGCACHE_HOST}"
+    #bench config set-common-config redis_big_cache ${BIGCACHE_HOST}
+    cat /home/frappe/docker-bench/sites/common_site_config.json | jq '.redis_big_cache = $newVal' --arg newVal "redis://${BIGCACHE_HOST}" > /home/frappe/docker-bench/sites/common_site_config.json.new
+    cat /home/frappe/docker-bench/sites/common_site_config.json.new > /home/frappe/docker-bench/sites/common_site_config.json
+    rm -f /home/frappe/docker-bench/sites/common_site_config.json.new
 fi
 
 if [ ! -z ${QUEUE_HOST} ]

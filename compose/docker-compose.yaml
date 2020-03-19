@@ -24,6 +24,13 @@ services:
     command: ["redis-server","/etc/conf.d/redis_cache.conf"]
     container_name: redis-cache
 
+  redis-bigcache:
+    image: redis:alpine
+    volumes:
+      - ./redis-conf:/etc/conf.d
+    command: ["redis-server","/etc/conf.d/redis_bigcache.conf"]
+    container_name: redis-bigcache
+
   redis-queue:
     image: redis:alpine
     volumes:
@@ -50,7 +57,7 @@ services:
     environment: 
       - GUNI_WORKER_CONNECTIONS=10
       - GUNI_WORKERS=1
-      - DB_NAME=frappe11db
+      - DB_NAME=frappe11localdb
       - DB_PASSWORD=ntex@123
       - ADMIN_PASSWORD=password
       - RELEASE_NAME=frappe11-local
@@ -62,10 +69,12 @@ services:
       - redis-cache
       - redis-queue
       - redis-socketio
+      - redis-bigcache
       - mariadb
     depends_on:
       - mariadb
       - redis-cache
+      - redis-bigcache
       - redis-queue
       - redis-socketio
     container_name: er-frappe
