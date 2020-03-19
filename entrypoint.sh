@@ -9,7 +9,7 @@ if [ $# -gt 0 ]
 then
   ARG1=$1
   # This check depends on content of supervisor.conf file
-  echo $ARG1 | grep -F -q 'docker-bench-web:*'
+  echo $ARG1 | grep -F -q -e 'docker-bench-web' -e 'docker-bench-socketio'
   IS_WEB=$?
 fi
 
