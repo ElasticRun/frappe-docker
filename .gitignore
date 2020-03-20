@@ -1,3 +1,3 @@
 .idea*
-mariadb_data*
-sites*
+compose/sites/site1.docker/.lock
+compose/logs*

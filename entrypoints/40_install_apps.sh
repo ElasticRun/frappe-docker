@@ -18,7 +18,7 @@ then
         export VAL=$app
         echo "Exported VAL=$VAL. Adding to apps.txt"
         echo "$app" >> ${BENCH_HOME}/sites/apps.txt
-        AWK_RESULT=$(awk -e 'BEGIN {
+        AWK_RESULT=$(awk 'BEGIN {
             liststr = ENVIRON["INSTALLED_APPS"]
             val = ENVIRON["VAL"]
             #print "val = ", val
@@ -26,7 +26,7 @@ then
             #print "APP_ARR = ", APP_ARR[1], " length = ", arrlen
             retval = 1
             i = 1
-            while ( and(i <= arrlen, retval == 1) ) {  if (APP_ARR[i]==val) {retval = 0}; i += 1 }
+            while ( i <= arrlen && retval == 1 ) {  if (APP_ARR[i]==val) {retval = 0}; i += 1 }
             #print "retval - ", retval
             print retval
         }')
