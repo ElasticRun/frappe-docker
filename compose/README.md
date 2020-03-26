@@ -2,8 +2,8 @@
 This folder contains the files that can be used to get any frappe based application up and running using docker image of the application and Docker Compose.
 
 ## Pre-requisites
-1. (Docker)[https://docs.docker.com/install/linux/docker-ce/ubuntu/]
-2. (Docker Compose)[https://docs.docker.com/compose/install/]
+1. [Docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+2. [Docker Compose](https://docs.docker.com/compose/install/)
 
 ## Steps to Start
 The folder contains all the necessary files and components that are needed to start running frappe locally - including a database. Follow the steps below to start a local environment of frappe -
