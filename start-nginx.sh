@@ -7,6 +7,8 @@ then
     # Nginx is already running in this docker. Do not try to start again.
     echo "Nginx is already running."
     echo "If you are running web and socketio in same container, this is normal!!"
+    sleep 2
+    exit 44
 else
     echo "Starting nginx in foreground..."
     nginx -g "daemon off;"
