@@ -14,61 +14,91 @@ variables:
 before_script:
   - export DATE_TAG=`date +%d%m%Y-%H%M`
 
-dev-erfrappe-deploy:
-  stage: deploy
+er-frappe-image-build:
+  stage: build
   script:
     - pwd
-    #- ./build-frappe11.sh develop
-    #- ./build-frappe11-alpine.sh develop
-    - ./build-frappe11-ubuntu.sh develop
-    #- docker push dock.elasticrun.in/er-frappe11-base:develop-deb
-    #- docker push dock.elasticrun.in/er-frappe11-base:develop-alpine
-    - docker push dock.elasticrun.in/er-frappe11-base:develop-xenial
-    - docker tag dock.elasticrun.in/er-frappe11-base:develop-xenial dock.elasticrun.in/er-frappe11-base:develop-${DATE_TAG}
-    - docker push dock.elasticrun.in/er-frappe11-base:develop-${DATE_TAG}
+    - ./build-frappe11-ubuntu.sh ${CI_COMMIT_REF_NAME:-develop}
+    - ./build-frappe11.1.16-ubuntu.sh ${CI_COMMIT_REF_NAME:-develop}
   only:
     - develop
-    - master
-  tags:
-    - build-srv
-
-
-beta-erfrappe-deploy:
-  stage: deploy
-  script:
-    - pwd
-    #- ./build-frappe11.sh beta-release
-    #- ./build-frappe11-alpine.sh beta-release
-    - ./build-frappe11-ubuntu.sh beta-release
-    #- docker push dock.elasticrun.in/er-frappe11-base:beta-release-deb
-    #- docker push dock.elasticrun.in/er-frappe11-base:beta-release-alpine
-    - docker push dock.elasticrun.in/er-frappe11-base:beta-release-xenial
-    - docker tag dock.elasticrun.in/er-frappe11-base:beta-release-xenial dock.elasticrun.in/er-frappe11-base:beta-release-${DATE_TAG}
-    - docker push dock.elasticrun.in/er-frappe11-base:beta-release-${DATE_TAG}
-  only:
     - beta-release
+    - release
   tags:
     - build-srv
-    - beta
 
-prod-erfrappe-deploy:
+er-frappe-image-deploy:
   stage: deploy
   script:
-    - pwd
-    #- ./build-frappe11.sh release
-    #- ./build-frappe11-alpine.sh release
-    - ./build-frappe11-ubuntu.sh release
-    #- docker push dock.elasticrun.in/er-frappe11-base:release-deb
-    #- docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-deb
-    #- docker push dock.elasticrun.in/er-frappe11-base:release-alpine
-    #- docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-alpine
-    - docker push dock.elasticrun.in/er-frappe11-base:release-xenial
-    - docker tag dock.elasticrun.in/er-frappe11-base:release-xenial dock.elasticrun.in/er-frappe11-base:release-${DATE_TAG}
-    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-xenial
-    - docker push dock.elasticrun.in/er-frappe11-base:release-${DATE_TAG}
+    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_REF_NAME:-develop}-xenial
+    - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_REF_NAME:-develop}-${CI_COMMIT_SHORT_SHA}-xenial
+    - docker push dock.elasticrun.in/er-frappe11.1.16-base:${CI_COMMIT_REF_NAME:-develop}-xenial
+    - docker push dock.elasticrun.in/er-frappe11.1.16-base:${CI_COMMIT_REF_NAME:-develop}-${CI_COMMIT_SHORT_SHA}-xenial
   only:
+    - develop
+    - beta-release
     - release
-    - prod
   tags:
-    - prod
-    - release
+    - build-srv
+
+# dev-erfrappe-deploy:
+#   stage: deploy
+#   script:
+#     - pwd
+#     #- ./build-frappe11.sh develop
+#     #- ./build-frappe11-alpine.sh develop
+#     - ./build-frappe11-ubuntu.sh develop
+#     - ./build-frappe11.1.16-ubuntu.sh develop
+#     #- docker push dock.elasticrun.in/er-frappe11-base:develop-deb
+#     #- docker push dock.elasticrun.in/er-frappe11-base:develop-alpine
+#     - docker push dock.elasticrun.in/er-frappe11-base:develop-xenial
+#     - docker push dock.elasticrun.in/er-frappe11-base:develop-11.1.16-xenial
+#     - dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-11.1.16-xenial
+#     - docker tag dock.elasticrun.in/er-frappe11-base:develop-xenial dock.elasticrun.in/er-frappe11-base:develop-${DATE_TAG}
+#     - docker push dock.elasticrun.in/er-frappe11-base:develop-${DATE_TAG}
+#   only:
+#     - develop
+#     - master
+#   tags:
+#     - build-srv
+
+
+# beta-erfrappe-deploy:
+#   stage: deploy
+#   script:
+#     - pwd
+#     #- ./build-frappe11.sh beta-release
+#     #- ./build-frappe11-alpine.sh beta-release
+#     - ./build-frappe11-ubuntu.sh beta-release
+#     #- docker push dock.elasticrun.in/er-frappe11-base:beta-release-deb
+#     #- docker push dock.elasticrun.in/er-frappe11-base:beta-release-alpine
+#     - docker push dock.elasticrun.in/er-frappe11-base:beta-release-xenial
+#     - docker tag dock.elasticrun.in/er-frappe11-base:beta-release-xenial dock.elasticrun.in/er-frappe11-base:beta-release-${DATE_TAG}
+#     - docker push dock.elasticrun.in/er-frappe11-base:beta-release-${DATE_TAG}
+#   only:
+#     - beta-release
+#   tags:
+#     - build-srv
+#     - beta
+
+# prod-erfrappe-deploy:
+#   stage: deploy
+#   script:
+#     - pwd
+#     #- ./build-frappe11.sh release
+#     #- ./build-frappe11-alpine.sh release
+#     - ./build-frappe11-ubuntu.sh release
+#     #- docker push dock.elasticrun.in/er-frappe11-base:release-deb
+#     #- docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-deb
+#     #- docker push dock.elasticrun.in/er-frappe11-base:release-alpine
+#     #- docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-alpine
+#     - docker push dock.elasticrun.in/er-frappe11-base:release-xenial
+#     - docker tag dock.elasticrun.in/er-frappe11-base:release-xenial dock.elasticrun.in/er-frappe11-base:release-${DATE_TAG}
+#     - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-xenial
+#     - docker push dock.elasticrun.in/er-frappe11-base:release-${DATE_TAG}
+#   only:
+#     - release
+#     - prod
+#   tags:
+#     - prod
+#     - release
