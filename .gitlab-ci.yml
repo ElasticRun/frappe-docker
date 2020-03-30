@@ -33,7 +33,7 @@ er-frappe-image-deploy:
     - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_REF_NAME:-develop}-xenial
     - docker push dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_REF_NAME:-develop}-${CI_COMMIT_SHORT_SHA}-xenial
     - docker push dock.elasticrun.in/er-frappe11.1.16-base:${CI_COMMIT_REF_NAME:-develop}-xenial
-    - docker push dock.elasticrun.in/er-frappe11.1.16-base:${CI_COMMIT_REF_NAME:-develop}-${CI_COMMIT_SHORT_SHA}-xenial
+    - docker push dock.elasticrun.in/er-frappe11.1.16-base:${CI_COMMIT_REF_NAME:-develop}-${CI_COMMIT_SHORT_SHA}
   only:
     - develop
     - beta-release

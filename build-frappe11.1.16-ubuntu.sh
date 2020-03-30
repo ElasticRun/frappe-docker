@@ -19,6 +19,6 @@ docker build --build-arg CUR_DATE=$(date +%Y-%m-%d:%H:%M:%S) --build-arg KAFKA_C
   -t dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-xenial -f Dockerfile_ubuntu .
 if [ "X${CI_COMMIT_SHORT_SHA}" != "X" ]
 then
-  docker tag dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-xenial dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-${CI_COMMIT_SH ORT_SHA}
-  echo "Tagged version image as dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-${CI_COMMIT_SH ORT_SHA}"
+  docker tag dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-xenial dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-${CI_COMMIT_SHORT_SHA}
+  echo "Tagged version image as dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-${CI_COMMIT_SHORT_SHA}"
 fi
