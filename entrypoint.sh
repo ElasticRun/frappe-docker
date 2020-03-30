@@ -97,7 +97,7 @@ then
   env
   echo "Starting supervisor"
   sudo -E supervisord --configuration /etc/supervisord.conf
-  if [ ! -z ${ARGS} -a "X${ARGS:-}" != "X" ]
+  if [ "X${ARGS}" != "X" ]
   then
     echo "Starting bench process... Arguments - $ARGS"
     ./run.sh ${ARGS}

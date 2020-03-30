@@ -1,7 +1,7 @@
 #! /bin/bash
-TAG=$1
+TAG=${1}
 #FRAPPE_BRANCH=version-11
-FRAPPE_BRANCH=v11.1.59
+FRAPPE_BRANCH=v11.1.16
 # Uses default frappe and bench master branches from github to build the docker image. Use own URLs to override.
 echo "Kafka Config : '${KAFKA_CONFIG}'"
 
@@ -16,9 +16,9 @@ docker build --build-arg CUR_DATE=$(date +%Y-%m-%d:%H:%M:%S) --build-arg KAFKA_C
   --build-arg BENCH_AUTH_USER=er-frappe-docker-base \
   --build-arg BENCH_AUTH_PASSWORD=f3JxMW8xr3MFCMxwydfS \
   --build-arg BENCH_BRANCH=master \
-  -t dock.elasticrun.in/er-frappe11-base:${TAG}-xenial -f Dockerfile_ubuntu .
+  -t dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-xenial -f Dockerfile_ubuntu .
 if [ "X${CI_COMMIT_SHORT_SHA}" != "X" ]
 then
-  docker tag dock.elasticrun.in/er-frappe11-base:${TAG}-xenial dock.elasticrun.in/er-frappe11-base:${TAG}-${CI_COMMIT_SHORT_SHA}-xenial
-  echo "Tagged version image as dock.elasticrun.in/er-frappe11-base:${CI_COMMIT_SHORT_SHA}-xenial"
+  docker tag dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-xenial dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-${CI_COMMIT_SHORT_SHA}
+  echo "Tagged version image as dock.elasticrun.in/er-frappe11.1.16-base:${TAG}-${CI_COMMIT_SHORT_SHA}"
 fi
