@@ -6,11 +6,25 @@ This folder contains the files that can be used to get any frappe based applicat
 2. [Docker Compose](https://docs.docker.com/compose/install/)
 
 ## Steps to Start
+
+;TL;DR;
+*  Run `build.sh` from root folder to generate frappe image.
+*  Run `startup.sh` script to start the frappe v11 docker environment locally.
+*  Wait for logs similar to below -
+```
+Looking for postboot_scripts
+Executing /home/frappe/docker-bench/postboot_scripts/00_dummy.sh...
+Executing dummy post boot script
+```
+*  Access the application on http://localhost:8888
+
+*  Read on for more details -
+
 The folder contains all the necessary files and components that are needed to start running frappe locally - including a database. Follow the steps below to start a local environment of frappe -
 
-1. Update docker-compose.yaml file (line no. 49) to use the application specific image
-2. Change to the `compose` folder and execute command `docker-compose up -d && docker logs -f er-frappe` to start all the necessary components.
-3. To login to the frappe/application container, execute command `docker exec -it er-frappe bash`.
+1. Update `docker-compose.yaml` file (line no. 49) to use the application specific image
+2. Change to the `compose` folder and execute command `./startup.sh` to start all the necessary components. Alternatively, create the `data` folder under `mariadb_data` folder, provide write permissions to all (`chmod 777 mariadb_data/data`) on `data` folder and then execute  `docker-compose up -d && docker logs -f frappe11`.
+3. To login to the frappe/application container, execute command `docker exec -it frappe11 bash`.
 4. The application will be available on http://localhost:8888.
 5. When not needed, execute command `./cleanup.sh`. Cleanup performs following steps -
 
