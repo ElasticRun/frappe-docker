@@ -1,5 +1,0 @@
-{
- "db_name": "frappe11localdb",
- "db_password": "ntex@123",
- "kafka": "{ \"api.version.request\": \"false\", \"auto.offset.reset\": \"smallest\", \"bootstrap.servers\": \"spine.ntex.com:10180\", \"client.id\": \"frappe-spine-client\", \"default.topic.config\": { \"acks\": \"all\" }, \"fetch.message.max.bytes\": \"81920\", \"group.id\": \"frappe-spine-client-grp\", \"request.required.acks\": \"1\" }"
-}
