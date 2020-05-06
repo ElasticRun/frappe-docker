@@ -2,7 +2,7 @@
  "admin_password": "password",
  "auto_update": false,
  "background_workers": 1,
- "db_host": "frappe11-local-db-ntex-com",
+ "db_host": "frappe11-db-ntex-com",
  "file_watcher_port": 6787,
  "frappe_user": "frappe",
  "gunicorn_workers": 4,

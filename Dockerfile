@@ -57,14 +57,19 @@ RUN addgroup --system --gid 1001 frappe && adduser --system --uid 1001 --ingroup
   && printf '# User rules for frappe\nfrappe ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
   && pip install -U pip-tools && pip install ${BENCH_URL}
 
-# Create bench instance
+# Create bench instance + cleanup
 USER frappe
-RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe && bench init ${BENCH_NAME} --ignore-exist \
-  --skip-redis-config-generation --no-procfile --no-backups --frappe-branch ${FRAPPE_BRANCH:-master} \
-  --verbose --frappe-path ${FRAPPE_URL} --python /usr/local/bin/python && cd /home/frappe/${BENCH_NAME} \
+RUN sudo chown -R frappe:frappe /home/frappe && cd /home/frappe \
+  && bench init ${BENCH_NAME} --ignore-exist \
+      --skip-redis-config-generation --no-procfile --no-backups --frappe-branch ${FRAPPE_BRANCH:-master} \
+      --verbose --frappe-path ${FRAPPE_URL} --python /usr/local/bin/python && cd /home/frappe/${BENCH_NAME} \
   && ./env/bin/pip install --upgrade werkzeug==0.16 && ./env/bin/pip install gevent watchgod \
   && mkdir -p /home/frappe/${BENCH_NAME}/entrypoints && chown -R frappe:frappe /home/frappe/${BENCH_NAME}/config \
-  && mkdir -p /home/frappe/${BENCH_NAME}/config/env
+  && mkdir -p /home/frappe/${BENCH_NAME}/config/env && rm -r /home/frappe/.cache \
+  && sudo rm -rf /tmp/* && sudo rm -r /root/.cache \
+  && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
+  && npm cache clean --force && sudo rm -rf /tmp/pip-install* \
+  && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
 
 USER root
 COPY --chown=frappe:frappe ./common_site_config_docker.json /home/frappe/docker-bench/common_site_config_docker.json
@@ -86,7 +91,7 @@ COPY --chown=frappe:frappe ./supervisor-docker.conf /home/frappe/${BENCH_NAME}/c
 COPY --chown=frappe:frappe ./nginx-docker.conf /home/frappe/${BENCH_NAME}/config/nginx.conf
 COPY --chown=frappe:frappe ./nginx-startup.conf /home/frappe/${BENCH_NAME}/config/nginx-startup.conf
 COPY --chown=frappe:frappe ./site_config_docker.json /home/frappe/${BENCH_NAME}/site_config_docker.json
-# Files setup + cleanup
+# Files setup
 RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh \
   && chmod u+x /home/frappe/${BENCH_NAME}/*.sh \
   && chmod u+x /home/frappe/${BENCH_NAME}/bench.default.env \
@@ -94,12 +99,8 @@ RUN chmod u+x /home/frappe/${BENCH_NAME}/entrypoints/*.sh \
   && chmod u+x /home/frappe/${BENCH_NAME}/postboot_scripts/*.sh \
   && ln -s /home/frappe/${BENCH_NAME}/config/nginx.conf /etc/nginx/conf.d/nginx.conf && mkdir -p /run/nginx \
   && mkdir -p /etc/supervisor.d && mkdir -p /var/run && mkdir -p /var/log/supervisor \
-  && ln -s /home/frappe/${BENCH_NAME}/config/supervisor.conf /etc/supervisor.d/frappe.conf \
-  && rm -rf /tmp/* && rm -r /root/.cache && rm -r /home/frappe/.cache \
-  && rm -rf /home/frappe/${BENCH_NAME}/apps/frappe/.git* \
-  && rm -rf /home/frappe/${BENCH_NAME}/apps/spine/.git* \
-  && npm cache clean --force && rm -rf /tmp/pip-install* \
-  && rm -rf /home/frappe/${BENCH_NAME}/env/src/pdfkit/.git
+  && ln -s /home/frappe/${BENCH_NAME}/config/supervisor.conf /etc/supervisor.d/frappe.conf
+  
 
 # Uncomment next 2 lines if you want all child images to mandatorily provide an entrypoint script 
 # under entrypoints directory

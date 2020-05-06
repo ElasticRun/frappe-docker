@@ -7,12 +7,12 @@ services:
       - MYSQL_USER=root
     volumes:
       - ./conf/mariadb-conf.d:/etc/mysql/conf.d:ro
-      - ./mariadb_data:/var/lib/mysql:rw
+      - ./mariadb_data/data:/var/lib/mysql:rw
     user:
       mysql
     ports:
       - "3307:3306" #mariadb-port
-    container_name: frappe11-local-db-ntex-com
+    container_name: frappe11-db-ntex-com
 #  volumes:
 #    mariadb_data:
 #      external: true
@@ -46,7 +46,7 @@ services:
     container_name: redis-socketio
 
   frappe:
-    image: dock.elasticrun.in/er-frappe11-base:develop-xenial
+    image: frappe11-base:ubuntu-xenial
     volumes:
       - ./env:/home/frappe/docker-bench/config/env
       - ./logs:/home/frappe/docker-bench/logs
@@ -60,7 +60,7 @@ services:
       - DB_NAME=frappe11localdb
       - DB_PASSWORD=ntex@123
       - ADMIN_PASSWORD=password
-      - RELEASE_NAME=frappe11-local
+      - RELEASE_NAME=frappe11
     ports:
       - "8888:8000" #webserver_port
     stdin_open: true
@@ -77,4 +77,4 @@ services:
       - redis-bigcache
       - redis-queue
       - redis-socketio
-    container_name: er-frappe
+    container_name: frappe11

@@ -1,0 +1,2 @@
+# MariaDB Data Directory
+`data` directory in this folder is used as the base data directory for mariadb when started from docker-compose. This directory should be writable by root/docker user for mariadb to start successfully.
