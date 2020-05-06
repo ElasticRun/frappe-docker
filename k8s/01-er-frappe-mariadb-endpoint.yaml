@@ -1,9 +1,0 @@
-kind: Endpoints
-apiVersion: v1
-metadata:
- name: frappe-db-ntex-com
-subsets:
- - addresses:
-     - ip: 192.168.1.13
-   ports:
-     - port: 3306

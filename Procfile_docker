@@ -1,8 +1,0 @@
-web: cd sites && ../env/bin/gunicorn -b 0.0.0.0:8002 -t 120 frappe.app:application --worker-connections ${GUNI_WORKER_CONNECTIONS:-200} --workers ${GUNI_WORKERS:-4} -k gevent --access-logfile /home/frappe/docker-bench/logs/access.log --reload --access-logformat  "{\"remote_ip\":\"%(h)s\",\"request_id\":\"%({X-Request-Id}i)s\",\"response_code\":%(s)s,\"request_method\":\"%(m)s\",\"request_path\":\"%(U)s\",\"request_querystring\":\"%(q)s\",\"request_timetaken\":%(D)s,\"response_length\":%(B)s}"
-socketio: /usr/bin/node apps/frappe/socketio.js
-schedule: bench schedule
-worker_short: bench worker --queue short
-worker_long: bench worker --queue long
-worker_default: bench worker --queue default
-
-spine_dispatcher: bench aio-eventdispatcher --queue kafka_events

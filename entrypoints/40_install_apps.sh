@@ -12,7 +12,7 @@ then
     echo "apps.txt cleared"
     for app in `ls ${BENCH_HOME}/apps`
     do
-        # TODO - Check if app in apps dir is available in installed apps.
+        # Check if app in apps dir is available in installed apps.
         # Install only if not available.
         echo "Processing application $app"
         export VAL=$app

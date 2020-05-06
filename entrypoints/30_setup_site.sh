@@ -12,8 +12,8 @@ then
     mysql -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \
             "grant all privileges on \`${DB_NAME}\`.* to \`${DB_NAME}\`@\`%\` with grant option; commit; flush privileges;" mysql
     #cp /home/frappe/${BENCH_NAME}/site_config_docker.json /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json
-    sed s/###DB_NAME###/${DB_NAME}/g /home/frappe/${BENCH_NAME}/site_config_docker.json >> /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json_intermediate
-    sed s/###DB_PASSWORD###/${DB_PASSWORD}/g /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json_intermediate >> /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json
+    sed s/:::DB_NAME:::/${DB_NAME}/g /home/frappe/${BENCH_NAME}/site_config_docker.json >> /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json_intermediate
+    sed s/:::DB_PASSWORD:::/${DB_PASSWORD}/g /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json_intermediate >> /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json
     rm -f /home/frappe/${BENCH_NAME}/sites/${SITE}/site_config.json_intermediate
     echo "creating new site ${SITE}"
     bench new-site --force --db-name ${DB_NAME} --mariadb-root-username root --admin-password ${ADMIN_PASSWORD} --verbose ${SITE}
@@ -37,6 +37,5 @@ then
         mv ${BENCH_HOME}/sites/${SITE}/site_config.json ${BENCH_HOME}/sites/${SITE}/site_config.json_orig
         cat ${BENCH_HOME}/sites/${SITE}/site_config.json_orig |tr -d "\\" | sed s/"\"kafka\": \""/"\"kafka\": "/g | sed s/"\"1\" }\""/"\"1\" }"/g > ${BENCH_HOME}/sites/${SITE}/site_config.json
         bench use ${SITE}
-        # echo -n "${SITE}" > ${BENCH_HOME}/sites/currentsite.txt
     fi
 fi
